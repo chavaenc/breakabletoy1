@@ -136,9 +136,9 @@ const RowBgColor = ({ row }) => {
   let textDeco;
   row.getVisibleCells().map((cell) => {
     const weekMs = 604800000;
+    let done = cell.row.original.status;
     if (cell.row.original.dueDate) {
       let dueDateMs = cell.row.original.dueDate.getTime();
-      let done = cell.row.original.status;
       if (dueDateMs) {
         if (Date.now() + weekMs >= dueDateMs) {
           bgColor = "#ff8a8a";
@@ -147,12 +147,12 @@ const RowBgColor = ({ row }) => {
         } else {
           bgColor = "rgb(186 255 186)";
         }
-        if (done === "done") {
-          textDeco = "line-through";
-        } else {
-          textDeco = "none";
-        }
       }
+    }
+    if (done === "done") {
+      textDeco = "line-through";
+    } else {
+      textDeco = "none";
     }
     return null;
   });
