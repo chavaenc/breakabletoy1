@@ -17,6 +17,7 @@ export type Todo = {
 export const columns: ColumnDef<Todo>[] = [
   {
     accessorKey: "status",
+    header: "Status",
   },
   {
     accessorKey: "text",
@@ -24,7 +25,44 @@ export const columns: ColumnDef<Todo>[] = [
   },
   {
     accessorKey: "priority",
-    header: () => <div className="text-center">Priority</div>,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        {" "}
+        Priority
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    sortingFn: (rowA, rowB, columnId) => {
+      if (rowA.original.priority === "high") {
+        if (rowB.original.priority === "medium") {
+          return 1;
+        } else if (rowB.original.priority === "low") {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (rowA.original.priority === "medium") {
+        if (rowB.original.priority === "high") {
+          return -1;
+        } else if (rowB.original.priority === "low") {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (rowA.original.priority === "low") {
+        if (rowB.original.priority === "high") {
+          return -1;
+        } else if (rowB.original.priority === "medium") {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+      return 0;
+    },
     cell: ({ row }) => {
       let backgroundColor = "";
       switch (row.getValue("priority")) {
