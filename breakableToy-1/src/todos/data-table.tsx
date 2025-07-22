@@ -4,11 +4,15 @@ import { Button } from "@/components/ui/button";
 
 import {
   ColumnDef,
+  SortingState,
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  getSortedRowModel,
 } from "@tanstack/react-table";
+
+import * as React from "react";
 
 import {
   Table,
@@ -29,11 +33,17 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   });
 
   return (
@@ -110,11 +120,11 @@ const RowBgColor = ({ row }) => {
       let done = cell.row.original.status;
       if (dueDateMs) {
         if (Date.now() + weekMs >= dueDateMs) {
-          bgColor = "red";
+          bgColor = "#ff8a8a";
         } else if (Date.now() + 2 * weekMs >= dueDateMs) {
-          bgColor = "yellow";
+          bgColor = "yellow-400";
         } else {
-          bgColor = "green";
+          bgColor = "#6ada6a";
         }
         if (done === "done") {
           textDeco = "line-through";
