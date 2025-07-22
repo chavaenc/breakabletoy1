@@ -75,11 +75,12 @@ export function DataTable<TData, TValue>({
 
 const RowBgColor = ({ row }) => {
   let bgColor;
-
+  let textDeco;
   row.getVisibleCells().map((cell) => {
     const weekMs = 604800000;
     if (cell.row.original.dueDate) {
       let dueDateMs = cell.row.original.dueDate.getTime();
+      let done = cell.row.original.status;
       if (dueDateMs) {
         if (Date.now() + weekMs >= dueDateMs) {
           bgColor = "red";
@@ -88,13 +89,18 @@ const RowBgColor = ({ row }) => {
         } else {
           bgColor = "green";
         }
+        if (done === "done") {
+          textDeco = "line-through";
+        } else {
+          textDeco = "none";
+        }
       }
     }
     return null;
   });
   return (
     <TableRow
-      style={{ backgroundColor: bgColor }}
+      style={{ backgroundColor: bgColor, textDecoration: textDeco }}
       key={row.id}
       data-state={row.getIsSelected() && "selected"}
     >
