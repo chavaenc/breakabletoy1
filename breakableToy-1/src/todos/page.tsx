@@ -40,6 +40,42 @@ const todos: Todo[] = [
     priority: "high",
     doneDate: new Date("2025-07-14"),
   },
+  {
+    id: "5",
+    text: "Submit taxes",
+    creationDate: new Date("2025-07-01"),
+    dueDate: new Date("2025-07-29"),
+    status: "done",
+    priority: "high",
+    doneDate: new Date("2025-07-14"),
+  },
+  {
+    id: "6",
+    text: "Submit taxes",
+    creationDate: new Date("2025-07-01"),
+    dueDate: new Date("2025-07-30"),
+    status: "done",
+    priority: "high",
+    doneDate: new Date("2025-07-14"),
+  },
+  {
+    id: "7",
+    text: "Submit taxes",
+    creationDate: new Date("2025-07-01"),
+    dueDate: new Date("2025-08-04"),
+    status: "done",
+    priority: "high",
+    doneDate: new Date("2025-07-14"),
+  },
+  {
+    id: "7",
+    text: "Submit taxes",
+    creationDate: new Date("2025-07-01"),
+    dueDate: new Date("2025-08-20"),
+    status: "done",
+    priority: "high",
+    doneDate: new Date("2025-07-14"),
+  },
 ]
 
     return todos;
