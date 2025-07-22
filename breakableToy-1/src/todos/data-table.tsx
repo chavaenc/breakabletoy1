@@ -143,9 +143,9 @@ const RowBgColor = ({ row }) => {
         if (Date.now() + weekMs >= dueDateMs) {
           bgColor = "#ff8a8a";
         } else if (Date.now() + 2 * weekMs >= dueDateMs) {
-          bgColor = "yellow-400";
+          bgColor = "#ffff0094";
         } else {
-          bgColor = "#6ada6a";
+          bgColor = "rgb(186 255 186)";
         }
         if (done === "done") {
           textDeco = "line-through";

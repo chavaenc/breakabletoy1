@@ -2,7 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../components/ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Check } from "lucide-react";
+import { Checkbox } from "../components/ui/checkbox";
+import { useState } from "react";
 
 export type Todo = {
   id: string;
@@ -16,24 +18,79 @@ export type Todo = {
 
 export const columns: ColumnDef<Todo>[] = [
   {
-    accessorKey: "status",
-    header: "Status",
+    id: "status",
+    header: ({ table }) => (
+      <div className="text-center">
+        <Checkbox
+          className="text-center"
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(!!value);
+
+            table.getRowModel().rows.map((row) => {
+              if (row.getIsSelected() && table.getIsAllPageRowsSelected()) {
+                row.original.status = "pending";
+              } else if (
+                row.getIsSelected() &&
+                !table.getIsAllPageRowsSelected()
+              ) {
+                row.original.status = "done";
+              } else if (
+                !row.getIsSelected() &&
+                !table.getIsAllPageRowsSelected()
+              ) {
+                row.original.status = "done";
+              }
+            });
+          }}
+          aria-label="Select all"
+        />
+      </div>
+    ),
+    cell: ({ row }) => {
+      let value = "";
+      return (
+        <div className="pt-1">
+          <Checkbox
+            checked={row.getIsSelected() && row.original.status == "done"}
+            onCheckedChange={(value) => {
+              row.toggleSelected(!!value);
+              if (row.getIsSelected()) {
+                row.original.status = "pending";
+              } else {
+                row.original.status = "done";
+              }
+            }}
+            aria-label="Select row"
+          />
+          <div className="hidden">{value}</div>
+        </div>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorKey: "text",
-    header: "Text",
+    header: () => <div className="text-center">Name</div>,
   },
   {
     accessorKey: "priority",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        {" "}
-        Priority
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      <div className="text-center">
+        <Button
+          className="text-center"
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {" "}
+          Priority
+          <ArrowUpDown className="ml-2 h-4 w-4 text-center" />
+        </Button>
+      </div>
     ),
     sortingFn: (rowA, rowB, columnId) => {
       if (rowA.original.priority === "high") {
@@ -79,7 +136,7 @@ export const columns: ColumnDef<Todo>[] = [
           backgroundColor = "white";
           break;
       }
-      return <div className="text-red-400">{row.getValue("priority")}</div>;
+      return <div className="">{row.getValue("priority")}</div>;
     },
   },
   {
@@ -87,23 +144,23 @@ export const columns: ColumnDef<Todo>[] = [
     sortingFn: "datetime",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          {" "}
-          Due Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {" "}
+            Due Date
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       );
     },
-  },
-  {
-    accessorKey: "creationDate",
-    header: "Creation Date",
-  },
-  {
-    accessorKey: "doneDate",
-    header: "Done Date",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("dueDate"));
+      const formatted =
+        date.getMonth() + 1 + "/" + date.getDay() + "/" + date.getFullYear();
+      return <div className="font-medium">{formatted}</div>;
+    },
   },
 ];
