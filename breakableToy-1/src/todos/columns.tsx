@@ -180,10 +180,14 @@ export const columns: ColumnDef<Todo>[] = [
       );
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dueDate"));
-      const formatted =
-        date.getMonth() + 1 + "/" + date.getDay() + "/" + date.getFullYear();
-      return <div className="font-medium">{formatted}</div>;
+      if (row.getValue("dueDate")) {
+        const date = new Date(row.getValue("dueDate"));
+        const formatted =
+          date.getMonth() + 1 + "/" + date.getDay() + "/" + date.getFullYear();
+        return <div className="font-medium">{formatted}</div>;
+      } else {
+        return <div>No due date</div>;
+      }
     },
   },
 ];
