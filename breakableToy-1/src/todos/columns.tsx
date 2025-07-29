@@ -2,9 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../components/ui/button";
-import { ArrowUpDown, Check } from "lucide-react";
+import { ArrowUpDown, Check, PencilIcon, TrashIcon } from "lucide-react";
 import { Checkbox } from "../components/ui/checkbox";
 import { useState } from "react";
+import UpdateTodo from "./updateTodo";
 
 export type Todo = {
   id: string;
@@ -188,6 +189,35 @@ export const columns: ColumnDef<Todo>[] = [
       } else {
         return <div>No due date</div>;
       }
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const id = row.original.id;
+      const text = row.original.text;
+      const dueDate = row.original.dueDate;
+      const priority = row.original.priority;
+
+      return (
+        <>
+          <div className="flex gap-1 p-1">
+            <Button
+              onClick={() => {}}
+              variant="outline"
+              className="h-5 w-5 p-3"
+            >
+              <TrashIcon className="text-red-400" />
+            </Button>
+            <UpdateTodo
+              id={id}
+              otext={text}
+              odueDate={dueDate}
+              opriority={priority}
+            />
+          </div>
+        </>
+      );
     },
   },
 ];
