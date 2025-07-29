@@ -19,59 +19,81 @@ export type Todo = {
 export const columns: ColumnDef<Todo>[] = [
   {
     id: "status",
+    accessorKey: "status",
+    // accessorFn: (row) => row.status,
     header: ({ table }) => (
       <div className="text-center">
         <Checkbox
           className="text-center"
           checked={
             table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            (table.getIsSomeRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(!!value);
-
-            table.getRowModel().rows.map((row) => {
-              if (row.getIsSelected() && table.getIsAllPageRowsSelected()) {
-                row.original.status = "pending";
-              } else if (
-                row.getIsSelected() &&
-                !table.getIsAllPageRowsSelected()
-              ) {
-                row.original.status = "done";
-              } else if (
-                !row.getIsSelected() &&
-                !table.getIsAllPageRowsSelected()
-              ) {
-                row.original.status = "done";
-              }
-            });
-          }}
+          onCheckedChange={table.getToggleAllPageRowsSelectedHandler()}
+          //   onCheckedChange={(value) => {
+          //     const selectedRows = table
+          //       .getRowModel()
+          //       .rows.map((row) => row.original.id);
+          //     setData((prev) =>
+          //       prev.map((todo) =>
+          //         selectedRows.includes(todo.id)
+          //           ? { ...todo, status: value ? "pending" : "done" }
+          //           : todo
+          //       )
+          //     );
+          //     table.toggleAllPageRowsSelected(!!value);
+          //   }}
           aria-label="Select all"
         />
       </div>
     ),
     cell: ({ row }) => {
-      let value = "";
+      let status = row.original.status;
       return (
         <div className="pt-1">
           <Checkbox
-            checked={row.getIsSelected() && row.original.status == "done"}
-            onCheckedChange={(value) => {
-              row.toggleSelected(!!value);
-              if (row.getIsSelected()) {
-                row.original.status = "pending";
-              } else {
-                row.original.status = "done";
-              }
-            }}
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onChange={row.getToggleSelectedHandler()}
+            // onCheckedChange={(value) => {
+            //   row.toggleSelected(!!value);
+            //   if (row.getIsSelected()) {
+            //     status = "pending";
+            //     row.original.status = "pending";
+            //     console.log(row.original.status);
+            //   } else {
+            //     status = "done";
+            //     row.renderValue("status");
+            //     row.o;
+
+            //     row.original.status = "done";
+            //     console.log(row.original.status);
+            //   }
+            // }}
             aria-label="Select row"
           />
-          <div className="hidden">{value}</div>
         </div>
       );
     },
     enableSorting: false,
     enableHiding: false,
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (filterValue.includes("done") && filterValue.includes("pending")) {
+        return true;
+      } else if (
+        filterValue.includes("done") &&
+        !filterValue.includes("pending")
+      ) {
+        return row.getIsSelected();
+      } else if (
+        !filterValue.includes("done") &&
+        filterValue.includes("pending")
+      ) {
+        return !row.getIsSelected();
+      } else {
+        return false;
+      }
+    },
   },
   {
     accessorKey: "text",
@@ -138,6 +160,7 @@ export const columns: ColumnDef<Todo>[] = [
       }
       return <div className="">{row.getValue("priority")}</div>;
     },
+    filterFn: "arrIncludesSome",
   },
   {
     accessorKey: "dueDate",
@@ -157,10 +180,14 @@ export const columns: ColumnDef<Todo>[] = [
       );
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dueDate"));
-      const formatted =
-        date.getMonth() + 1 + "/" + date.getDay() + "/" + date.getFullYear();
-      return <div className="font-medium">{formatted}</div>;
+      if (row.getValue("dueDate")) {
+        const date = new Date(row.getValue("dueDate"));
+        const formatted =
+          date.getMonth() + 1 + "/" + date.getDay() + "/" + date.getFullYear();
+        return <div className="font-medium">{formatted}</div>;
+      } else {
+        return <div>No due date</div>;
+      }
     },
   },
 ];
