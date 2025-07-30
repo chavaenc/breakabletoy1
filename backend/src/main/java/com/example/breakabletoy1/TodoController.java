@@ -1,22 +1,21 @@
 package com.example.breakabletoy1;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*"
+)
 @RestController
-@CrossOrigin
+
 @RequestMapping("/todos")
 public class TodoController {
 
@@ -26,7 +25,6 @@ public class TodoController {
     public ResponseEntity<?> createTodo(@RequestBody Todo todo) {
         String validationError = validateTodo(todo);
         if (validationError != null) {
-            System.out.println("validationError: " + validationError);
             return ResponseEntity.badRequest().body(validationError);
         }
 
@@ -44,22 +42,49 @@ public class TodoController {
     public ResponseEntity<?> getTodos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Boolean done,
+            @RequestParam(required = false) List<String> status,
+            @RequestParam(required = false) List<Todo.Priority> priority,
             @RequestParam(required = false) String text,
-            @RequestParam(required = false) Todo.Priority priority,
             @RequestParam(defaultValue = "creationDate") String sortBy
     ) {
-        List<Todo> filtered = todos.values().stream()
-                .filter(todo -> done == null || todo.isDone() == done)
-                .filter(todo -> text == null || todo.getText().toLowerCase().contains(text.toLowerCase()))
-                .filter(todo -> priority == null || todo.getPriority() == priority)
+        Stream<Todo> stream = todos.values().stream();
+        if (priority != null) {
+            if (priority.isEmpty()) {
+                stream = Stream.empty();
+            } else {
+                stream = stream.filter(todo -> priority.contains(todo.getPriority()));
+            }
+        } else {
+            stream = Stream.empty();
+        }
+        if (status != null) {
+            boolean wantsDone = status.contains("done");
+            boolean wantsUndone = status.contains("undone");
+
+            if (wantsDone && wantsUndone) {
+c            } else if (wantsDone) {
+                stream = stream.filter(Todo::isDone);
+            } else if (wantsUndone) {
+                stream = stream.filter(todo -> !todo.isDone());
+            } else {
+c                stream = Stream.empty();
+            }
+        } else {
+            stream = Stream.empty();
+        }
+        if (text != null && !text.isBlank()) {
+            String lowerText = text.toLowerCase();
+            stream = stream.filter(todo -> todo.getText().toLowerCase().contains(lowerText));
+        }
+
+        List<Todo> sortedFiltered = stream
                 .sorted(getComparator(sortBy))
                 .collect(Collectors.toList());
 
-        int total = filtered.size();
+        int total = sortedFiltered.size();
         int totalPages = (int) Math.ceil((double) total / size);
 
-        List<Todo> paged = filtered.stream()
+        List<Todo> paged = sortedFiltered.stream()
                 .skip((long) page * size)
                 .limit(size)
                 .collect(Collectors.toList());
@@ -72,7 +97,6 @@ public class TodoController {
         response.put("totalPages", totalPages);
 
         return ResponseEntity.ok(response);
-
     }
 
     @PutMapping("/{id}")
@@ -114,6 +138,12 @@ public class TodoController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTodo(@PathVariable String id) {
+        todos.remove(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private String validateTodo(Todo todo) {
         if (todo.getText() == null || todo.getText().trim().isEmpty()) {
             return "Text is required.";
@@ -128,15 +158,17 @@ public class TodoController {
     }
 
     private Comparator<Todo> getComparator(String sortBy) {
-        switch (sortBy) {
-            case "dueDate":
-                return Comparator.comparing(Todo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()));
-            case "priority":
-                return Comparator.comparing(Todo::getPriority);
-            case "creationDate":
-                return Comparator.comparing(Todo::getCreationDate, Comparator.nullsLast(Comparator.naturalOrder()));
-            default:
-                return Comparator.comparing(Todo::getCreationDate);
-        }
+        return switch (sortBy) {
+            case "dueDate" -> Comparator.comparing(
+                    Todo::getDueDate,
+                    Comparator.nullsLast(Comparator.naturalOrder())
+            );
+            case "priority" -> Comparator.comparing(Todo::getPriority);
+            case "creationDate", "created", "date" -> Comparator.comparing(
+                    Todo::getCreationDate,
+                    Comparator.nullsLast(Comparator.naturalOrder())
+            );
+            default -> Comparator.comparing(Todo::getCreationDate);
+        };
     }
 }
