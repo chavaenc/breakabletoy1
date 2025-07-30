@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../components/ui/button";
 import { ArrowUpDown, Check, PencilIcon, TrashIcon } from "lucide-react";
@@ -14,11 +14,23 @@ export type Todo = {
   id: string;
   text: string;
   dueDate: Date | null;
-  status: "done" | "pending";
+  done: boolean;
   priority: "high" | "low" | "medium";
   creationDate: Date;
   doneDate: Date | null;
 };
+
+async function markDone(id: string) {
+  await fetch(`http://localhost:8080/todos/${id}/done`, {
+    method: "POST",
+  });
+}
+
+async function markUndone(id: string) {
+  await fetch(`http://localhost:8080/todos/${id}/undone`, {
+    method: "PUT",
+  });
+}
 
 export function getColumns({
   setRows,
@@ -28,53 +40,44 @@ export function getColumns({
   return [
     {
       id: "status",
-      accessorKey: "status",
-      header: ({ table }) => (
-        <div className="text-center">
-          <Checkbox
-            className="text-center"
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomeRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={table.getToggleAllPageRowsSelectedHandler()}
-            aria-label="Select all"
-          />
-        </div>
-      ),
+      header: () => <div className="text-center">Status</div>,
       cell: ({ row }) => {
-        let status = row.original.status;
+        const todo = row.original;
+        const isChecked = todo.done;
+
+        const handleChange = async (checked: boolean) => {
+          try {
+            if (checked) {
+              await fetch(`http://localhost:8080/todos/${todo.id}/done`, {
+                method: "POST",
+              });
+            } else {
+              await fetch(`http://localhost:8080/todos/${todo.id}/undone`, {
+                method: "PUT",
+              });
+            }
+
+            const updated = await fetchTodos();
+            setRows(updated.todos);
+            setTotalPages(updated.totalPages);
+          } catch (err) {
+            console.error("Failed to update todo status:", err);
+          }
+        };
+
+        console.log("STATUs", row.original.done);
         return (
-          <div className="pt-1">
-            <Checkbox
-              checked={row.getIsSelected()}
-              disabled={!row.getCanSelect()}
-              onChange={row.getToggleSelectedHandler()}
-              aria-label="Select row"
-            />
-          </div>
+          <Checkbox
+            checked={todo.done}
+            onCheckedChange={() => handleChange(!todo.done)}
+            aria-label="Mark as done"
+          />
         );
       },
       enableSorting: false,
       enableHiding: false,
-      filterFn: (row, columnId, filterValue: string[]) => {
-        if (filterValue.includes("done") && filterValue.includes("pending")) {
-          return true;
-        } else if (
-          filterValue.includes("done") &&
-          !filterValue.includes("pending")
-        ) {
-          return row.getIsSelected();
-        } else if (
-          !filterValue.includes("done") &&
-          filterValue.includes("pending")
-        ) {
-          return !row.getIsSelected();
-        } else {
-          return false;
-        }
-      },
     },
+
     {
       accessorKey: "text",
       header: () => <div className="text-center">Name</div>,

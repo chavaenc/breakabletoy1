@@ -152,7 +152,7 @@ export function DataTable<TData, TValue>({
       />
       <CreateTodo
         setData={setRows}
-        fetchTodos={() => fetchTodos({ text, page, status, priority })}
+        fetchTodos={() => fetchTodos({ page, status, priority })}
         setTotalPages={setTotalPages}
       />
       <div className="flex mb-4"></div>
@@ -240,45 +240,37 @@ export function DataTable<TData, TValue>({
 }
 
 const RowBgColor = ({ row }) => {
-  let bgColor;
-  let textDeco;
-  row.getVisibleCells().map((cell) => {
+  let bgColor = "";
+  let textDeco = "";
+
+  const todo = row.original;
+
+  if (todo.dueDate) {
     const weekMs = 604800000;
-    let done = cell.row.original.status;
-    if (cell.row.original.dueDate) {
-      let dueDateMs = cell.row.original.dueDate.getTime();
-      if (dueDateMs) {
-        if (Date.now() + weekMs >= dueDateMs) {
-          bgColor = "#ff8a8a";
-        } else if (Date.now() + 2 * weekMs >= dueDateMs) {
-          bgColor = "#ffff0094";
-        } else {
-          bgColor = "rgb(186 255 186)";
-        }
-      }
-    }
-    if (row.getIsSelected()) {
-      textDeco = "line-through";
+    const dueDate = new Date(todo.dueDate).getTime();
+    const now = Date.now();
+
+    if (now + weekMs >= dueDate) {
+      bgColor = "#ff8a8a";
+    } else if (now + 2 * weekMs >= dueDate) {
+      bgColor = "#ffff0094";
     } else {
-      textDeco = "none";
+      bgColor = "rgb(186 255 186)";
     }
-    return null;
-  });
+  }
+
+  textDeco = todo.done ? "line-through" : "none";
+
   return (
     <TableRow
-      style={{ backgroundColor: bgColor, textDecoration: textDeco }}
       key={row.id}
-      data-state={row.getIsSelected() && "selected"}
-      onClick={row.getToggleSelectedHandler()}
+      style={{ backgroundColor: bgColor, textDecoration: textDeco }}
     >
-      {row.getVisibleCells().map((cell) => {
-        return (
-          <TableCell key={cell.id}>
-            {" "}
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        );
-      })}
+      {row.getVisibleCells().map((cell) => (
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
     </TableRow>
   );
 };
