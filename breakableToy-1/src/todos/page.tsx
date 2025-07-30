@@ -81,9 +81,10 @@ export default function DemoPage() {
   const [total, setTotal] = useState();
   const [totalPages, setTotalPages] = useState();
   const [status, setStatus] = useState(["done", "undone"]);
+  const [text, setText] = useState("");
 
   useEffect(() => {
-    fetchTodos({ page, status, priority }).then((data) => {
+    fetchTodos({ page, status, priority, text }).then((data) => {
       setRows(data.todos);
     });
   }, []);
@@ -99,6 +100,8 @@ export default function DemoPage() {
         setPriority={setPriority}
         status={status}
         setStatus={setStatus}
+        text={text}
+        setText={setText}
         total={total}
         totalPages={totalPages}
         fetchTodos={fetchTodos}

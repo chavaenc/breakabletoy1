@@ -45,13 +45,17 @@ interface DataTableProps<TData, TValue> {
   priority: any;
   setPriority: any;
   done: any;
+  text: any;
   setDone: any;
+  setText: any;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   rows,
   setRows,
+  text,
+  setText,
   total,
   fetchTodos,
   priority,
@@ -134,11 +138,13 @@ export function DataTable<TData, TValue>({
         priority={priority}
         setPriority={setPriority}
         fetchTodos={fetchTodos}
+        text={text}
         setTotalPages={setTotalPages}
         status={status}
         setStatus={setStatus}
         page={page}
         setData={setRows}
+        setText={setText}
       />
       <CreateTodo
         setData={setRows}

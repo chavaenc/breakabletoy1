@@ -11,9 +11,28 @@ export default function Filters({
   setTotalPages,
   page,
   status,
+  text,
+  setText,
   setStatus,
   setData,
 }) {
+  const getFilteredTodos = async ({ text, status, priority, page }) => {
+    const params = new URLSearchParams();
+
+    params.append("page", page.toString());
+    params.append("size", "10");
+
+    status.forEach((s) => params.append("status", s));
+    priority.forEach((p) => params.append("priority", p));
+
+    if (text && text.trim()) {
+      params.append("text", text.trim());
+    }
+
+    const res = await fetchTodos({ text, status, priority, page });
+    setData(res.todos);
+  };
+
   return (
     <div className="flex items-start py-4 gap-1">
       <div className="flex flex-col gap-6 items-start justify-between align-middle">
@@ -26,12 +45,18 @@ export default function Filters({
         <Input
           type="text"
           placeholder="Filter..."
-          value={(table.getColumn("text")?.getFilterValue() as string) ?? " "}
-          onChange={(event) =>
-            table.getColumn("text")?.setFilterValue(event.target.value)
-          }
-          className="self-end justify-end"
-        ></Input>
+          value={text}
+          onChange={(e) => {
+            const newText = e.target.value;
+            setText(newText); // local state for UI
+            getFilteredTodos({
+              text: newText,
+              status: status,
+              priority: priority,
+              page: 0,
+            });
+          }}
+        />
         <DropdownMenuPriority
           table={table}
           priority={priority}
