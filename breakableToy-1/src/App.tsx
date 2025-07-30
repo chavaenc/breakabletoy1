@@ -1,13 +1,12 @@
-import { useState } from 'react'
-import './App.css'
-import DemoPage from './todos/page'
+import { useState } from "react";
+import "./App.css";
+import DemoPage from "./todos/page";
 function App() {
-
   return (
     <>
-     <DemoPage/>
+      <DemoPage />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

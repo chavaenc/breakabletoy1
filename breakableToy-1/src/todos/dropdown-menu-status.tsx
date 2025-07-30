@@ -19,6 +19,7 @@ export function DropdownMenuStatus({
   priority,
   setStatus,
   setData,
+  text,
 }) {
   const [doneStatusChecked, setDoneStatusChecked] = useState<Checked>(true);
   const [pendingStatusChecked, setPendingStatusChecked] =
@@ -32,6 +33,7 @@ export function DropdownMenuStatus({
     try {
       setStatus(updatedStatus);
       const result = await fetchTodos({
+        text,
         status: updatedStatus,
         priority: updatedPriority,
         page: page,

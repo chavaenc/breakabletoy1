@@ -36,7 +36,7 @@ import {
 import { useEffect, useState } from "react";
 import Filters from "./filters";
 import { Button } from "../components/ui/button";
-import type { Todo } from "./columns";
+import { getColumns, type Todo } from "./columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -67,9 +67,14 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [totalPages, setTotalPages] = useState(0);
   const table = useReactTable({
     data: rows,
-    columns,
+    columns: getColumns({
+      setRows,
+      setTotalPages,
+      fetchTodos: () => fetchTodos({ text, page, status, priority }),
+    }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -123,7 +128,6 @@ export function DataTable<TData, TValue>({
   }
 
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     fetchTodos({ page, priority, status }).then((data) => {
       setRows(data.todos);
@@ -148,7 +152,7 @@ export function DataTable<TData, TValue>({
       />
       <CreateTodo
         setData={setRows}
-        fetchTodos={() => fetchTodos({ page, status, priority })}
+        fetchTodos={() => fetchTodos({ text, page, status, priority })}
         setTotalPages={setTotalPages}
       />
       <div className="flex mb-4"></div>

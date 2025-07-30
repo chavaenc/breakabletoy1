@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { columns, Todo } from "./columns";
+import { getColumns, Todo } from "./columns";
 import { DataTable } from "./data-table";
 
 type Priority = "HIGH" | "MEDIUM" | "LOW";
@@ -29,7 +29,7 @@ interface PaginatedTodos {
   total: number;
   totalPages: number;
 }
-async function fetchTodos(
+export async function fetchTodos(
   params: FetchTodosParams = {}
 ): Promise<PaginatedTodos> {
   const query = new URLSearchParams();
@@ -92,7 +92,7 @@ export default function DemoPage() {
   return (
     <div className="container mx-auto py-10">
       <DataTable
-        columns={columns}
+        columns={getColumns}
         rows={rows}
         setRows={setRows}
         page={page}
@@ -104,6 +104,7 @@ export default function DemoPage() {
         setText={setText}
         total={total}
         totalPages={totalPages}
+        setTotalPages={setTotalPages}
         fetchTodos={fetchTodos}
       />
     </div>

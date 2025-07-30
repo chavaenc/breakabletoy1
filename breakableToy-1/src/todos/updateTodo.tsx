@@ -21,9 +21,20 @@ import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group";
 import { Calendar } from "../components/ui/calendar";
 import { Button } from "../components/ui/button";
 import { useFormStatus } from "react-dom";
+import { fetchTodos } from "./page";
 import { Input } from "../components/ui/input";
 import type { Todo } from "./columns";
-export default function UpdateTodo({ id, otext, odueDate, opriority }) {
+
+export default function UpdateTodo({
+  id,
+  otext,
+  odueDate,
+  opriority,
+  setRows,
+  fetchTodos,
+  setTotalPages,
+}) {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [text, setText] = useState("");
@@ -34,7 +45,11 @@ export default function UpdateTodo({ id, otext, odueDate, opriority }) {
     e.preventDefault();
     console.log("Submitting todo...");
     const newDate = date?.toISOString().split("T")[0];
-    await updateTodo(id, { text, dueDate: newDate, priority });
+    await updateTodo(id, {
+      text,
+      dueDate: newDate,
+      priority: priority.toUpperCase(),
+    });
   };
 
   useEffect(() => {
@@ -52,6 +67,7 @@ export default function UpdateTodo({ id, otext, odueDate, opriority }) {
     }
   ) {
     try {
+      console.log("ola");
       const response = await fetch(`http://localhost:8080/todos/${id}`, {
         method: "PUT",
         headers: {
@@ -62,12 +78,14 @@ export default function UpdateTodo({ id, otext, odueDate, opriority }) {
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.log(":c");
         throw new Error(`Failed to update todo: ${errorText}`);
       }
+      // setDialogOpen(false);
+      const updated = await fetchTodos();
 
-      const result = await response.json();
-      console.log("Updated todo:", result);
-      return result;
+      setRows(updated.todos);
+      setTotalPages(updated.totalPages);
     } catch (err) {
       console.error("Error:", err);
     }
@@ -82,13 +100,24 @@ export default function UpdateTodo({ id, otext, odueDate, opriority }) {
     );
   }
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => {}} variant="outline" className="h-5 w-5 p-3">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-5 w-5 p-3"
+          onClick={(e) => {
+            setDialogOpen(true);
+            e.stopPropagation(); // Prevent row-level click handler from interfering
+          }}
+        >
           <PencilIcon />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Update Todo</DialogTitle>
@@ -110,23 +139,23 @@ export default function UpdateTodo({ id, otext, odueDate, opriority }) {
             <div className="grid gap-3">
               <Label htmlFor="priority">Priority</Label>
               <ToggleGroup
-                defaultValue={priority}
+                defaultValue={priority.toUpperCase()}
                 type="single"
                 onValueChange={(e) => {
                   if (e) setPriority(e.toUpperCase() as any);
                 }}
               >
-                <ToggleGroupItem value="high" aria-label="Toggle high">
+                <ToggleGroupItem value="HIGH" aria-label="Toggle high">
                   <p className="text-bold text-red-600"> High </p>
                 </ToggleGroupItem>
                 <ToggleGroupItem
-                  value="medium"
+                  value="MEDIUM"
                   aria-label="Toggle Medium"
                   className="pl-5 pr-5"
                 >
                   <p className="text-bold text-orange-400 "> Medium </p>
                 </ToggleGroupItem>
-                <ToggleGroupItem value="low" aria-label="Toggle Low">
+                <ToggleGroupItem value="LOW" aria-label="Toggle Low">
                   Low
                 </ToggleGroupItem>
               </ToggleGroup>

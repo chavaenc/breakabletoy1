@@ -20,6 +20,7 @@ export function DropdownMenuPriority({
   setData,
   status,
   page,
+  text,
 }) {
   const [lowStatusChecked, setLowChecked] = React.useState<Checked>(true);
   const [mediumStatusChecked, setMediumStatusChecked] =
@@ -35,6 +36,7 @@ export function DropdownMenuPriority({
     try {
       setPriority(updatedPriority);
       const result = await fetchTodos({
+        text,
         status: updatedStatus,
         priority: updatedPriority,
         page: page,

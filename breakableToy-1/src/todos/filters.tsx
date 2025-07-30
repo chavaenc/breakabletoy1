@@ -63,12 +63,14 @@ export default function Filters({
           setPriority={setPriority}
           fetchTodos={fetchTodos}
           setTotalPages={setTotalPages}
+          text={text}
           setData={setData}
           page={page}
           status={status}
         />
         <DropdownMenuStatus
           table={table}
+          text={text}
           page={page}
           status={status}
           priority={priority}
