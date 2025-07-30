@@ -22,6 +22,7 @@ import { Calendar } from "../components/ui/calendar";
 import { Button } from "../components/ui/button";
 import { useFormStatus } from "react-dom";
 import { fetchTodos } from "./page";
+import { updateTodo } from "./api/updateTodo";
 import { Input } from "../components/ui/input";
 import type { Todo } from "./columns";
 
@@ -45,11 +46,17 @@ export default function UpdateTodo({
     e.preventDefault();
     console.log("Submitting todo...");
     const newDate = date?.toISOString().split("T")[0];
-    await updateTodo(id, {
-      text,
-      dueDate: newDate,
-      priority: priority.toUpperCase(),
-    });
+    await updateTodo(
+      id,
+      {
+        text,
+        dueDate: newDate,
+        priority: priority.toUpperCase(),
+      },
+      setRows,
+      setTotalPages,
+      fetchTodos
+    );
   };
 
   useEffect(() => {
@@ -57,39 +64,6 @@ export default function UpdateTodo({
     setPriority(opriority);
     setDate(odueDate);
   }, []);
-
-  async function updateTodo(
-    id: string,
-    updatedTodo: {
-      text: string;
-      dueDate?: string; // "YYYY-MM-DD"
-      priority: "HIGH" | "MEDIUM" | "LOW";
-    }
-  ) {
-    try {
-      console.log("ola");
-      const response = await fetch(`http://localhost:8080/todos/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedTodo),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log(":c");
-        throw new Error(`Failed to update todo: ${errorText}`);
-      }
-      // setDialogOpen(false);
-      const updated = await fetchTodos();
-
-      setRows(updated.todos);
-      setTotalPages(updated.totalPages);
-    } catch (err) {
-      console.error("Error:", err);
-    }
-  }
 
   function Submit() {
     const { pending } = useFormStatus();
