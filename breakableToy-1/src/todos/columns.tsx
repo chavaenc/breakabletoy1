@@ -192,7 +192,27 @@ export function getColumns({
           <>
             <div className="flex gap-1 p-1">
               <Button
-                onClick={() => {}}
+                onClick={async () => {
+                  try {
+                    const res = await fetch(
+                      `http://localhost:8080/todos/${id}`,
+                      {
+                        method: "DELETE",
+                      }
+                    );
+
+                    if (!res.ok) {
+                      const msg = await res.text();
+                      throw new Error(msg || "Failed to delete");
+                    }
+
+                    const updated = await fetchTodos();
+                    setRows(updated.todos);
+                    setTotalPages(updated.totalPages);
+                  } catch (err) {
+                    console.error("Delete failed:", err);
+                  }
+                }}
                 variant="outline"
                 className="h-5 w-5 p-3"
               >
