@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useFormStatus } from "react-dom";
 
 import {
   ColumnDef,
@@ -15,171 +15,7 @@ import {
 } from "@tanstack/react-table";
 
 import * as React from "react";
-
-import { Input } from "@/components/ui/input";
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
-
-import { DropdownMenuCheckboxItemProp } from "@radix-ui/react-dropdown-menu";
-
-type Checked = DropdownMenuCheckboxItemProps["checked"];
-
-export function DropdownMenuStatus({ table }) {
-  const initFilters = ["done", "pending"];
-  const [filterArr, setFilterArr] = React.useState(initFilters);
-  const [doneStatusChecked, setDoneStatusChecked] =
-    React.useState<Checked>(true);
-  const [pendingStatusChecked, setPendingStatusChecked] =
-    React.useState<Checked>(true);
-
-  const updateFilter = (fStr: string, setState, state) => {
-    const newState = !state;
-    setState(newState);
-
-    let newFilterArr;
-
-    if (newState) {
-      newFilterArr = [...filterArr, fStr];
-    } else {
-      newFilterArr = filterArr.filter((f) => f !== fStr);
-    }
-
-    setFilterArr(newFilterArr);
-    table.getColumn("status")?.setFilterValue(newFilterArr);
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          {filterArr.map((f) => {
-            if (filterArr.at(filterArr.length - 1) === f) {
-              return f;
-            } else {
-              return f + ", ";
-            }
-          })}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent side="bottom" align="start" className="w-56">
-        <DropdownMenuLabel>Status</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem
-          checked={doneStatusChecked}
-          onCheckedChange={(e) => {
-            updateFilter("done", setDoneStatusChecked, doneStatusChecked);
-          }}
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          Done
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={pendingStatusChecked}
-          onCheckedChange={() => {
-            updateFilter(
-              "pending",
-              setPendingStatusChecked,
-              pendingStatusChecked
-            );
-          }}
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          Pending
-        </DropdownMenuCheckboxItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-export function DropdownMenuPriority({ table }) {
-  const initFilters = ["low", "medium", "high"];
-  const [filterArr, setFilterArr] = React.useState(initFilters);
-  const [lowStatusChecked, setLowChecked] = React.useState<Checked>(true);
-  const [mediumStatusChecked, setMediumStatusChecked] =
-    React.useState<Checked>(true);
-  const [highStatusChecked, setHighStatusChecked] =
-    React.useState<Checked>(true);
-
-  const updateFilter = (fStr: string, setState, state) => {
-    const newState = !state;
-    setState(newState);
-
-    let newFilterArr;
-
-    if (newState) {
-      newFilterArr = [...filterArr, fStr];
-    } else {
-      newFilterArr = filterArr.filter((f) => f !== fStr);
-    }
-
-    setFilterArr(newFilterArr);
-    table.getColumn("priority")?.setFilterValue(newFilterArr);
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          {filterArr.map((f) => {
-            if (filterArr.at(filterArr.length - 1) === f) {
-              return f;
-            } else {
-              return f + ", ";
-            }
-          })}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent side="bottom" align="start" className="w-56">
-        <DropdownMenuLabel>Priority</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem
-          checked={highStatusChecked}
-          onCheckedChange={(e) => {
-            updateFilter("high", setHighStatusChecked, highStatusChecked);
-          }}
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          High
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={mediumStatusChecked}
-          onCheckedChange={() => {
-            updateFilter("medium", setMediumStatusChecked, mediumStatusChecked);
-          }}
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          Medium
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={lowStatusChecked}
-          onCheckedChange={() => {
-            updateFilter("low", setLowChecked, lowStatusChecked);
-          }}
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          Low
-        </DropdownMenuCheckboxItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
+import CreateTodo from "./createTodo";
 import {
   Table,
   TableBody,
@@ -187,25 +23,58 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useState } from "react";
+} from "../components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../components/ui/pagination";
+import { useEffect, useState } from "react";
+import Filters from "./filters";
+import { Button } from "../components/ui/button";
+import { getColumns, type Todo } from "./columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  setRows: any;
+  priority: any;
+  setPriority: any;
+  done: any;
+  text: any;
+  setDone: any;
+  setText: any;
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  rows,
+  setRows,
+  text,
+  setText,
+  total,
+  fetchTodos,
+  priority,
+  setPriority,
+  status,
+  setStatus,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [totalPages, setTotalPages] = useState(0);
   const table = useReactTable({
-    data,
-    columns,
+    data: rows,
+    columns: getColumns({
+      setRows,
+      setTotalPages,
+      fetchTodos: () => fetchTodos({ text, page, status, priority }),
+    }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -218,29 +87,75 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  interface Todo {
+    id: number;
+    name: string;
+    priority: string;
+    dueDate: string;
+    doneDate: string;
+    creationDate: string;
+    status: string;
+  }
+
+  async function updateTodo(
+    id: string,
+    updatedTodo: {
+      text: string;
+      dueDate?: string; // "YYYY-MM-DD"
+      priority: "HIGH" | "MEDIUM" | "LOW";
+    }
+  ) {
+    try {
+      const response = await fetch(`http://localhost:8080/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTodo),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update todo: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Updated todo:", result);
+      return result;
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  }
+
+  const [page, setPage] = useState(0);
+  useEffect(() => {
+    fetchTodos({ page, priority, status }).then((data) => {
+      setRows(data.todos);
+      setTotalPages(data.totalPages);
+    });
+  }, [page]);
+
   return (
     <div>
-      <div className="flex items-start py-4 gap-1">
-        <div className="flex flex-col gap-6 items-start justify-between align-middle">
-          <p>Name:</p>
-          <p>Priority:</p>
-          <p>State:</p>
-        </div>
-        <div className="flex  flex-col items-start gap-2">
-          <Input
-            type="text"
-            placeholder="Filter..."
-            value={(table.getColumn("text")?.getFilterValue() as string) ?? " "}
-            onChange={(event) =>
-              table.getColumn("text")?.setFilterValue(event.target.value)
-            }
-            className="self-end justify-end"
-          ></Input>
-          <DropdownMenuPriority table={table} />
-          <DropdownMenuStatus table={table} />
-          {table.getmodel}
-        </div>
-      </div>
+      <Filters
+        table={table}
+        priority={priority}
+        setPriority={setPriority}
+        fetchTodos={fetchTodos}
+        text={text}
+        setTotalPages={setTotalPages}
+        status={status}
+        setStatus={setStatus}
+        page={page}
+        setData={setRows}
+        setText={setText}
+      />
+      <CreateTodo
+        setData={setRows}
+        fetchTodos={() => fetchTodos({ page, status, priority })}
+        setTotalPages={setTotalPages}
+      />
+      <div className="flex mb-4"></div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -282,67 +197,80 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  page > 0 && setPage((prev) => prev - 1);
+                }}
+              />
+            </PaginationItem>
+
+            {[...Array(totalPages)].map((_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  href={`?page=${i + 1}`}
+                  isActive={i === page}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(i);
+                  }}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={() =>
+                  page + 1 < totalPages && setPage((prev) => prev + 1)
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
 }
 
 const RowBgColor = ({ row }) => {
-  let bgColor;
-  let textDeco;
-  row.getVisibleCells().map((cell) => {
+  let bgColor = "";
+  let textDeco = "";
+
+  const todo = row.original;
+
+  if (todo.dueDate) {
     const weekMs = 604800000;
-    let done = cell.row.original.status;
-    if (cell.row.original.dueDate) {
-      let dueDateMs = cell.row.original.dueDate.getTime();
-      if (dueDateMs) {
-        if (Date.now() + weekMs >= dueDateMs) {
-          bgColor = "#ff8a8a";
-        } else if (Date.now() + 2 * weekMs >= dueDateMs) {
-          bgColor = "#ffff0094";
-        } else {
-          bgColor = "rgb(186 255 186)";
-        }
-      }
-    }
-    if (row.getIsSelected()) {
-      textDeco = "line-through";
+    const dueDate = new Date(todo.dueDate).getTime();
+    const now = Date.now();
+
+    if (now + weekMs >= dueDate) {
+      bgColor = "#ff8a8a";
+    } else if (now + 2 * weekMs >= dueDate) {
+      bgColor = "#ffff0094";
     } else {
-      textDeco = "none";
+      bgColor = "rgb(186 255 186)";
     }
-    return null;
-  });
+  }
+
+  textDeco = todo.done ? "line-through" : "none";
+
   return (
     <TableRow
-      style={{ backgroundColor: bgColor, textDecoration: textDeco }}
       key={row.id}
-      data-state={row.getIsSelected() && "selected"}
-      onClick={row.getToggleSelectedHandler()}
+      style={{ backgroundColor: bgColor, textDecoration: textDeco }}
     >
-      {row.getVisibleCells().map((cell) => {
-        return (
-          <TableCell key={cell.id}>
-            {" "}
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        );
-      })}
+      {row.getVisibleCells().map((cell) => (
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
     </TableRow>
   );
 };

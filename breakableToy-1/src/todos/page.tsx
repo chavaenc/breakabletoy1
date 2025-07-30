@@ -1,128 +1,112 @@
-import { columns, Todo } from "./columns";
+import { useEffect, useState } from "react";
+import { getColumns, Todo } from "./columns";
 import { DataTable } from "./data-table";
 
-function getData(): Todo[] {
-  // fetch data from api here
-  const todos: Todo[] = [
-    {
-      id: "1",
-      text: "Buy groceries",
-      creationDate: new Date("2025-07-15"),
-      dueDate: new Date("2025-07-20"),
-      status: "pending",
-      priority: "medium",
-      doneDate: null,
-    },
-    {
-      id: "2",
-      text: "Finish report",
-      creationDate: new Date("2025-07-10"),
-      dueDate: new Date("2025-07-18"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-17"),
-    },
-    {
-      id: "3",
-      text: "Call plumber",
-      creationDate: new Date("2025-07-12"),
-      dueDate: null,
-      status: "pending",
-      priority: "low",
-      doneDate: null,
-    },
-    {
-      id: "4",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: null,
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "5",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-07-29"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "6",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-07-30"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "7",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-08-04"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "8",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-08-20"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "9",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-08-20"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "10",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-08-20"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "11",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-08-20"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-    {
-      id: "12",
-      text: "Submit taxes",
-      creationDate: new Date("2025-07-01"),
-      dueDate: new Date("2025-08-20"),
-      status: "pending",
-      priority: "high",
-      doneDate: new Date("2025-07-14"),
-    },
-  ];
+type Priority = "HIGH" | "MEDIUM" | "LOW";
 
-  return todos;
+interface Todo {
+  id: string;
+  text: string;
+  dueDate?: Date;
+  done: boolean;
+  doneDate?: Date;
+  priority: Priority[];
+  creationDate: Date;
+}
+
+interface FetchTodosParams {
+  page?: number;
+  size?: number;
+  status?: ("done" | "undone")[];
+  text?: string;
+  priority?: Priority;
+  sortBy?: "priority" | "dueDate";
+}
+interface PaginatedTodos {
+  todos: Todo[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+}
+export async function fetchTodos(
+  params: FetchTodosParams = {}
+): Promise<PaginatedTodos> {
+  const query = new URLSearchParams();
+
+  if (params.page !== undefined) query.append("page", params.page.toString());
+  if (params.size !== undefined) query.append("size", params.size.toString());
+  if (params.status && Array.isArray(params.status)) {
+    params.status.forEach((p) => query.append("status", p));
+  }
+  if (params.text) query.append("text", params.text);
+  if (params.priority && Array.isArray(params.priority)) {
+    params.priority.forEach((p) => {
+      query.append("priority", p);
+      console.log(p);
+    });
+  }
+  if (params.sortBy) query.append("sortBy", params.sortBy);
+
+  const url = `http://localhost:8080/todos?${query.toString()}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch todos: ${response.status}`);
+  }
+
+  const raw = await response.json();
+
+  return {
+    todos: raw.todos.map(
+      (todo: any): Todo => ({
+        ...todo,
+        dueDate: todo.dueDate ? new Date(todo.dueDate) : undefined,
+        doneDate: todo.doneDate ? new Date(todo.doneDate) : undefined,
+        creationDate: new Date(todo.creationDate),
+        priority: todo.priority.toLowerCase(),
+      })
+    ),
+    page: raw.page,
+    size: raw.size,
+    total: raw.total,
+    totalPages: raw.totalPages,
+  };
 }
 
 export default function DemoPage() {
-  const data = getData();
+  const [rows, setRows] = useState<Todo[]>([]);
+  const [page, setPage] = useState();
+  const [priority, setPriority] = useState(["HIGH", "MEDIUM", "LOW"]);
+  const [total, setTotal] = useState();
+  const [totalPages, setTotalPages] = useState();
+  const [status, setStatus] = useState(["done", "undone"]);
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    fetchTodos({ page, status, priority, text }).then((data) => {
+      setRows(data.todos);
+    });
+  }, []);
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <DataTable
+        columns={getColumns}
+        rows={rows}
+        setRows={setRows}
+        page={page}
+        priority={priority}
+        setPriority={setPriority}
+        status={status}
+        setStatus={setStatus}
+        text={text}
+        setText={setText}
+        total={total}
+        totalPages={totalPages}
+        setTotalPages={setTotalPages}
+        fetchTodos={fetchTodos}
+      />
     </div>
   );
 }
