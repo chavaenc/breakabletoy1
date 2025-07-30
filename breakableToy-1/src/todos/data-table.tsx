@@ -41,7 +41,11 @@ import type { Todo } from "./columns";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  setData: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setRows: any;
+  priority: any;
+  setPriority: any;
+  done: any;
+  setDone: any;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,6 +54,10 @@ export function DataTable<TData, TValue>({
   setRows,
   total,
   fetchTodos,
+  priority,
+  setPriority,
+  status,
+  setStatus,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -113,7 +121,7 @@ export function DataTable<TData, TValue>({
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
-    fetchTodos({ page }).then((data) => {
+    fetchTodos({ page, priority, status }).then((data) => {
       setRows(data.todos);
       setTotalPages(data.totalPages);
     });
@@ -121,10 +129,20 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <Filters table={table} />
+      <Filters
+        table={table}
+        priority={priority}
+        setPriority={setPriority}
+        fetchTodos={fetchTodos}
+        setTotalPages={setTotalPages}
+        status={status}
+        setStatus={setStatus}
+        page={page}
+        setData={setRows}
+      />
       <CreateTodo
         setData={setRows}
-        fetchTodos={() => fetchTodos({ page })}
+        fetchTodos={() => fetchTodos({ page, status, priority })}
         setTotalPages={setTotalPages}
       />
       <div className="flex mb-4"></div>

@@ -10,14 +10,14 @@ interface Todo {
   dueDate?: Date;
   done: boolean;
   doneDate?: Date;
-  priority: Priority;
+  priority: Priority[];
   creationDate: Date;
 }
 
 interface FetchTodosParams {
   page?: number;
   size?: number;
-  done?: boolean;
+  status?: ("done" | "undone")[];
   text?: string;
   priority?: Priority;
   sortBy?: "priority" | "dueDate";
@@ -36,12 +36,18 @@ async function fetchTodos(
 
   if (params.page !== undefined) query.append("page", params.page.toString());
   if (params.size !== undefined) query.append("size", params.size.toString());
-  if (params.done !== undefined) query.append("done", params.done.toString());
+  if (params.status && Array.isArray(params.status)) {
+    params.status.forEach((p) => query.append("status", p));
+  }
   if (params.text) query.append("text", params.text);
-  if (params.priority) query.append("priority", params.priority);
+  if (params.priority && Array.isArray(params.priority)) {
+    params.priority.forEach((p) => {
+      query.append("priority", p);
+      console.log(p);
+    });
+  }
   if (params.sortBy) query.append("sortBy", params.sortBy);
 
-  console.log(query);
   const url = `http://localhost:8080/todos?${query.toString()}`;
 
   const response = await fetch(url);
@@ -71,11 +77,13 @@ async function fetchTodos(
 export default function DemoPage() {
   const [rows, setRows] = useState<Todo[]>([]);
   const [page, setPage] = useState();
-  const [total, setTota] = useState();
+  const [priority, setPriority] = useState(["HIGH", "MEDIUM", "LOW"]);
+  const [total, setTotal] = useState();
   const [totalPages, setTotalPages] = useState();
+  const [status, setStatus] = useState(["done", "undone"]);
 
   useEffect(() => {
-    fetchTodos({ page }).then((data) => {
+    fetchTodos({ page, status, priority }).then((data) => {
       setRows(data.todos);
     });
   }, []);
@@ -87,6 +95,10 @@ export default function DemoPage() {
         rows={rows}
         setRows={setRows}
         page={page}
+        priority={priority}
+        setPriority={setPriority}
+        status={status}
+        setStatus={setStatus}
         total={total}
         totalPages={totalPages}
         fetchTodos={fetchTodos}

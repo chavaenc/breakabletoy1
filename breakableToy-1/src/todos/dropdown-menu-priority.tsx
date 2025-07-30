@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "../components/ui/button";
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 import {
@@ -11,40 +11,70 @@ import {
 } from "../components/ui/dropdown-menu";
 import type { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 
-export function DropdownMenuPriority({ table }) {
-  const initFilters = ["low", "medium", "high"];
-  const [filterArr, setFilterArr] = React.useState(initFilters);
+export function DropdownMenuPriority({
+  table,
+  priority,
+  setPriority,
+  fetchTodos,
+  setTotalPages,
+  setData,
+  status,
+  page,
+}) {
   const [lowStatusChecked, setLowChecked] = React.useState<Checked>(true);
   const [mediumStatusChecked, setMediumStatusChecked] =
     React.useState<Checked>(true);
   const [highStatusChecked, setHighStatusChecked] =
     React.useState<Checked>(true);
+  const [error, setError] = useState();
 
-  const updateFilter = (fStr: string, setState, state) => {
-    const newState = !state;
+  const getFilteredTodos = async ({
+    updatedPriority = priority,
+    updatedStatus = status,
+  } = {}) => {
+    try {
+      setPriority(updatedPriority);
+      const result = await fetchTodos({
+        status: updatedStatus,
+        priority: updatedPriority,
+        page: page,
+      });
+      setData(result.todos);
+      setTotalPages(result.totalPages);
+    } catch (err: any) {
+      console.log(err);
+      setError(err.message);
+    }
+  };
+
+  const updateFilter = async (fStr: string, setState, currentState) => {
+    const newState = !currentState;
     setState(newState);
 
-    let newFilterArr;
+    // Compute new priority manually, don't rely on state
+    const newPriority = newState
+      ? [...priority, fStr]
+      : priority.filter((p) => p !== fStr);
 
-    if (newState) {
-      newFilterArr = [...filterArr, fStr];
-    } else {
-      newFilterArr = filterArr.filter((f) => f !== fStr);
-    }
+    // Fetch with this newPriority directly
+    await getFilteredTodos({
+      updatedPriority: newPriority,
+      updatedStatus: status,
+    });
 
-    setFilterArr(newFilterArr);
-    table.getColumn("priority")?.setFilterValue(newFilterArr);
+    // THEN update state to match what was used in fetch
+    setPriority(newPriority);
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
-          {filterArr.map((f) => {
-            if (filterArr.at(filterArr.length - 1) === f) {
-              return f;
+          {priority.map((f) => {
+            if (priority.at(priority.length - 1) === f) {
+              return f.toLowerCase();
             } else {
-              return f + ", ";
+              return f.toLowerCase() + ", ";
             }
           })}
         </Button>
@@ -54,8 +84,8 @@ export function DropdownMenuPriority({ table }) {
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={highStatusChecked}
-          onCheckedChange={(e) => {
-            updateFilter("high", setHighStatusChecked, highStatusChecked);
+          onCheckedChange={async (e) => {
+            await updateFilter("HIGH", setHighStatusChecked, highStatusChecked);
           }}
           onSelect={(e) => {
             e.preventDefault();
@@ -66,7 +96,7 @@ export function DropdownMenuPriority({ table }) {
         <DropdownMenuCheckboxItem
           checked={mediumStatusChecked}
           onCheckedChange={() => {
-            updateFilter("medium", setMediumStatusChecked, mediumStatusChecked);
+            updateFilter("MEDIUM", setMediumStatusChecked, mediumStatusChecked);
           }}
           onSelect={(e) => {
             e.preventDefault();
@@ -77,7 +107,7 @@ export function DropdownMenuPriority({ table }) {
         <DropdownMenuCheckboxItem
           checked={lowStatusChecked}
           onCheckedChange={() => {
-            updateFilter("low", setLowChecked, lowStatusChecked);
+            updateFilter("LOW", setLowChecked, lowStatusChecked);
           }}
           onSelect={(e) => {
             e.preventDefault();

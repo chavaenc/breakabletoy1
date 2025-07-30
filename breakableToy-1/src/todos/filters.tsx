@@ -3,7 +3,17 @@ import { Input } from "../components/ui/input";
 import { DropdownMenuPriority } from "./dropdown-menu-priority";
 import { DropdownMenuStatus } from "./dropdown-menu-status";
 
-export default function Filters({ table }) {
+export default function Filters({
+  table,
+  priority,
+  setPriority,
+  fetchTodos,
+  setTotalPages,
+  page,
+  status,
+  setStatus,
+  setData,
+}) {
   return (
     <div className="flex items-start py-4 gap-1">
       <div className="flex flex-col gap-6 items-start justify-between align-middle">
@@ -22,8 +32,26 @@ export default function Filters({ table }) {
           }
           className="self-end justify-end"
         ></Input>
-        <DropdownMenuPriority table={table} />
-        <DropdownMenuStatus table={table} />
+        <DropdownMenuPriority
+          table={table}
+          priority={priority}
+          setPriority={setPriority}
+          fetchTodos={fetchTodos}
+          setTotalPages={setTotalPages}
+          setData={setData}
+          page={page}
+          status={status}
+        />
+        <DropdownMenuStatus
+          table={table}
+          page={page}
+          status={status}
+          priority={priority}
+          setStatus={setStatus}
+          fetchTodos={fetchTodos}
+          setTotalPages={setTotalPages}
+          setData={setData}
+        />
         {table.getmodel}
       </div>
     </div>

@@ -21,7 +21,6 @@ export const columns: ColumnDef<Todo>[] = [
   {
     id: "status",
     accessorKey: "status",
-    // accessorFn: (row) => row.status,
     header: ({ table }) => (
       <div className="text-center">
         <Checkbox
@@ -31,19 +30,6 @@ export const columns: ColumnDef<Todo>[] = [
             (table.getIsSomeRowsSelected() && "indeterminate")
           }
           onCheckedChange={table.getToggleAllPageRowsSelectedHandler()}
-          //   onCheckedChange={(value) => {
-          //     const selectedRows = table
-          //       .getRowModel()
-          //       .rows.map((row) => row.original.id);
-          //     setData((prev) =>
-          //       prev.map((todo) =>
-          //         selectedRows.includes(todo.id)
-          //           ? { ...todo, status: value ? "pending" : "done" }
-          //           : todo
-          //       )
-          //     );
-          //     table.toggleAllPageRowsSelected(!!value);
-          //   }}
           aria-label="Select all"
         />
       </div>
@@ -56,21 +42,6 @@ export const columns: ColumnDef<Todo>[] = [
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onChange={row.getToggleSelectedHandler()}
-            // onCheckedChange={(value) => {
-            //   row.toggleSelected(!!value);
-            //   if (row.getIsSelected()) {
-            //     status = "pending";
-            //     row.original.status = "pending";
-            //     console.log(row.original.status);
-            //   } else {
-            //     status = "done";
-            //     row.renderValue("status");
-            //     row.o;
-
-            //     row.original.status = "done";
-            //     console.log(row.original.status);
-            //   }
-            // }}
             aria-label="Select row"
           />
         </div>
