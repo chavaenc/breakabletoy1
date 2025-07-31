@@ -35,7 +35,7 @@ import {
 } from "../components/ui/pagination";
 import { useEffect, useState } from "react";
 import Filters from "./filters";
-import { Button } from "../components/ui/button";
+import { getAverages } from "./api/fetchTodos";
 import { getColumns, type Todo } from "./columns";
 
 interface DataTableProps<TData, TValue> {
@@ -68,12 +68,25 @@ export function DataTable<TData, TValue>({
     []
   );
   const [totalPages, setTotalPages] = useState(0);
+  const [metricData, setMetricData] = useState();
+
   const table = useReactTable({
     data: rows,
     columns: getColumns({
       setRows,
       setTotalPages,
-      fetchTodos: () => fetchTodos({ text, page, status, priority }),
+      fetchTodos: () =>
+        fetchTodos({
+          text,
+          page,
+          status,
+          priority,
+        }),
+      getAverages: () => {
+        getAverages(setMetricData);
+      },
+      metricData,
+      setMetricData,
     }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -95,36 +108,6 @@ export function DataTable<TData, TValue>({
     doneDate: string;
     creationDate: string;
     status: string;
-  }
-
-  async function updateTodo(
-    id: string,
-    updatedTodo: {
-      text: string;
-      dueDate?: string; // "YYYY-MM-DD"
-      priority: "HIGH" | "MEDIUM" | "LOW";
-    }
-  ) {
-    try {
-      const response = await fetch(`http://localhost:8080/todos/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedTodo),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to update todo: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log("Updated todo:", result);
-      return result;
-    } catch (err) {
-      console.error("Error:", err);
-    }
   }
 
   const [page, setPage] = useState(0);
@@ -234,6 +217,31 @@ export function DataTable<TData, TValue>({
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+      </div>
+      <div>
+        <h3>Average time to finish tasks:</h3>
+        <p>
+          {metricData?.averageTime} mins, (
+          {(metricData?.averageTime / 60)?.toPrecision(3)} hours) or (
+          {(metricData?.averageTime / 60 / 24)?.toPrecision(3)} days)
+        </p>
+
+        <h3>Average time to finish tasks by priority:</h3>
+        <p>
+          Low: {metricData?.byPriority.low} mins, (
+          {(metricData?.byPriority.low / 60)?.toPrecision(3)} hours) or (
+          {(metricData?.byPriority.low / 60 / 24)?.toPrecision(3)} days)
+        </p>
+        <p>
+          Medium: {metricData?.byPriority.medium} mins, (
+          {(metricData?.byPriority.medium / 60)?.toPrecision(3)} hours) or (
+          {(metricData?.byPriority.medium / 60 / 24)?.toPrecision(3)} days)
+        </p>
+        <p>
+          High: {metricData?.byPriority.high} mins, (
+          {(metricData?.byPriority.high / 60)?.toPrecision(3)} hours) or (
+          {(metricData?.byPriority.high / 60 / 24)?.toPrecision(3)} days)
+        </p>
       </div>
     </div>
   );

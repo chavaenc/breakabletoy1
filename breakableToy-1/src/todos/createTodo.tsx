@@ -22,6 +22,7 @@ import { Calendar } from "../components/ui/calendar";
 import { Button } from "../components/ui/button";
 import { useFormStatus } from "react-dom";
 import { Input } from "../components/ui/input";
+import { postTodo } from "./api/postTodo";
 import type { Todo } from "./columns";
 export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
   const [open, setOpen] = React.useState();
@@ -34,40 +35,19 @@ export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitting todo...");
-    await postTodo();
-  };
-
-  const postTodo = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: text,
-          dueDate: date?.toISOString().split("T")[0],
-          priority: priority || undefined,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const result = await response.json();
-      console.log("Created:", result);
-      setText("");
-      setDate(undefined);
-      setPriority("");
-      setError("");
-      setDialogOpen(false);
-      const updated = await fetchTodos();
-      setData(updated.todos);
-      setTotalPages(updated.totalPages);
-    } catch (err: any) {
-      setError(err.message);
-    }
+    await postTodo({
+      setText,
+      setPriority,
+      setError,
+      setDialogOpen,
+      setData,
+      setTotalPages,
+      fetchTodos,
+      setDate,
+      date,
+      priority,
+      text,
+    });
   };
 
   function Submit() {
@@ -78,6 +58,7 @@ export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
       </Button>
     );
   }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>

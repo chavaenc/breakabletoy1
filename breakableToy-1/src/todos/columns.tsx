@@ -5,10 +5,15 @@ import { Button } from "../components/ui/button";
 import { ArrowUpDown, Check, PencilIcon, TrashIcon } from "lucide-react";
 import { Checkbox } from "../components/ui/checkbox";
 import UpdateTodo from "./updateTodo";
+import { markDone, markUndone } from "./api/updateTodo";
+import { deleteTodo } from "./api/deleteTodo";
 type ColumnsProps = {
   setRows: React.Dispatch<React.SetStateAction<Todo[]>>;
   setTotalPages: React.Dispatch<React.SetStateAction<number>>;
   fetchTodos: any;
+  getAverages: any;
+  setMetricData: any;
+  metricData: any;
 };
 export type Todo = {
   id: string;
@@ -20,22 +25,13 @@ export type Todo = {
   doneDate: Date | null;
 };
 
-async function markDone(id: string) {
-  await fetch(`http://localhost:8080/todos/${id}/done`, {
-    method: "POST",
-  });
-}
-
-async function markUndone(id: string) {
-  await fetch(`http://localhost:8080/todos/${id}/undone`, {
-    method: "PUT",
-  });
-}
-
 export function getColumns({
   setRows,
   setTotalPages,
   fetchTodos,
+  getAverages,
+  setMetricData,
+  metricData,
 }: ColumnsProps): ColumnDef<Todo>[] {
   return [
     {
@@ -48,18 +44,15 @@ export function getColumns({
         const handleChange = async (checked: boolean) => {
           try {
             if (checked) {
-              await fetch(`http://localhost:8080/todos/${todo.id}/done`, {
-                method: "POST",
-              });
+              markDone(todo.id);
             } else {
-              await fetch(`http://localhost:8080/todos/${todo.id}/undone`, {
-                method: "PUT",
-              });
+              markUndone(todo.id);
             }
 
             const updated = await fetchTodos();
             setRows(updated.todos);
             setTotalPages(updated.totalPages);
+            getAverages();
           } catch (err) {
             console.error("Failed to update todo status:", err);
           }
@@ -192,26 +185,8 @@ export function getColumns({
           <>
             <div className="flex gap-1 p-1">
               <Button
-                onClick={async () => {
-                  try {
-                    const res = await fetch(
-                      `http://localhost:8080/todos/${id}`,
-                      {
-                        method: "DELETE",
-                      }
-                    );
-
-                    if (!res.ok) {
-                      const msg = await res.text();
-                      throw new Error(msg || "Failed to delete");
-                    }
-
-                    const updated = await fetchTodos();
-                    setRows(updated.todos);
-                    setTotalPages(updated.totalPages);
-                  } catch (err) {
-                    console.error("Delete failed:", err);
-                  }
+                onClick={() => {
+                  deleteTodo(fetchTodos, setRows, setTotalPages, id);
                 }}
                 variant="outline"
                 className="h-5 w-5 p-3"
