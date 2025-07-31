@@ -16,9 +16,6 @@ public class Todo {
     private LocalDate doneDate;
     private Priority priority;
     private LocalDate creationDate;
-    // TODO: Change into separate class
-    public enum Priority {
-        HIGH, MEDIUM, LOW
-    }
+
 
 }

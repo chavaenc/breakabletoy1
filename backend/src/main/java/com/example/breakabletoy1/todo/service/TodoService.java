@@ -3,6 +3,8 @@ package com.example.breakabletoy1.todo.service;
 import com.example.breakabletoy1.todo.model.AverageCompletionTimes;
 import com.example.breakabletoy1.todo.model.PaginatedTodos;
 import com.example.breakabletoy1.todo.model.Todo;
+import com.example.breakabletoy1.todo.model.Priority;
+
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -13,7 +15,7 @@ import java.util.*;
 public class TodoService {
     private final List<Todo> todos = new ArrayList<>();
 
-    public PaginatedTodos getTodos(List<Todo.Priority> priority,
+    public PaginatedTodos getTodos(List<Priority> priority,
                                    List<String> status,
                                    String text,
                                    int page,
@@ -130,8 +132,8 @@ public class TodoService {
         }
 
         long totalMinutes = 0;
-        Map<Todo.Priority, Long> prioritySums = new EnumMap<>(Todo.Priority.class);
-        Map<Todo.Priority, Long> priorityCounts = new EnumMap<>(Todo.Priority.class);
+        Map<Priority, Long> prioritySums = new EnumMap<>(Priority.class);
+        Map<Priority, Long> priorityCounts = new EnumMap<>(Priority.class);
 
         for (Todo todo : doneTodos) {
             long minutes = Duration.between(
@@ -141,7 +143,7 @@ public class TodoService {
 
             totalMinutes += minutes;
 
-            Todo.Priority priority = todo.getPriority();
+            Priority priority = todo.getPriority();
             prioritySums.put(priority, prioritySums.getOrDefault(priority, 0L) + minutes);
             priorityCounts.put(priority, priorityCounts.getOrDefault(priority, 0L) + 1);
         }
@@ -149,7 +151,7 @@ public class TodoService {
         double average = doneTodos.isEmpty() ? 0 : (double) totalMinutes / doneTodos.size();
 
         Map<String, Double> averagesByPriority = new HashMap<>();
-        for (Todo.Priority p : Todo.Priority.values()) {
+        for (Priority p : Priority.values()) {
             long sum = prioritySums.getOrDefault(p, 0L);
             long count = priorityCounts.getOrDefault(p, 0L);
             double avg = (count == 0) ? 0 : (double) sum / count;

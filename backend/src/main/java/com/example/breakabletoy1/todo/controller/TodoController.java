@@ -2,6 +2,7 @@ package com.example.breakabletoy1.todo.controller;
 
 import com.example.breakabletoy1.todo.model.AverageCompletionTimes;
 import com.example.breakabletoy1.todo.model.PaginatedTodos;
+import com.example.breakabletoy1.todo.model.Priority;
 import com.example.breakabletoy1.todo.model.Todo;
 import com.example.breakabletoy1.todo.service.TodoService;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class TodoController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) List<String> status,
-            @RequestParam(required = false) List<Todo.Priority> priority,
+            @RequestParam(required = false) List<Priority> priority,
             @RequestParam(required = false) String text,
             @RequestParam(defaultValue = "creationData") String sortBy
     ) {
