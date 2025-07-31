@@ -1,7 +1,6 @@
-package com.example.breakabletoy1;
+package com.example.breakabletoy1.todo;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class Todo {
     private String id;

@@ -14,8 +14,4 @@ public class BreakableToy1Application {
 		SpringApplication.run(BreakableToy1Application.class, args);
 	}
 
-    @GetMapping
-    public String helloWorld() {
-        return "Hello World!";
-    }
 }
