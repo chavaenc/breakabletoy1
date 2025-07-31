@@ -1,13 +1,13 @@
-package com.example.breakabletoy1.todo;
+package com.example.breakabletoy1.todo.controller;
 
+import com.example.breakabletoy1.todo.model.AverageCompletionTimes;
+import com.example.breakabletoy1.todo.model.PaginatedTodos;
+import com.example.breakabletoy1.todo.model.Todo;
+import com.example.breakabletoy1.todo.service.TodoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @CrossOrigin(
         origins = "http://localhost:5173",
@@ -25,33 +25,37 @@ public class TodoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTodo(@RequestBody Todo todo) {
+    public ResponseEntity<String> createTodo(@RequestBody Todo todo) {
         String error = service.validateTodo(todo);
         if (error != null) return ResponseEntity.badRequest().body(error);
 
-        Todo created = service.createTodo(todo);
-        return ResponseEntity.status(201).body(created);
+        boolean createdSuccessfully = service.createTodo(todo) != null;
+        return createdSuccessfully
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
     }
 
     @GetMapping
-    public ResponseEntity<?> getTodos(
+    public ResponseEntity<PaginatedTodos> getTodos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) List<String> status,
             @RequestParam(required = false) List<Todo.Priority> priority,
             @RequestParam(required = false) String text,
-            @RequestParam(defaultValue = "creationDate") String sortBy
+            @RequestParam(defaultValue = "creationData") String sortBy
     ) {
         return ResponseEntity.ok(service.getTodos(priority, status, text, page, size, sortBy));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTodo(@PathVariable String id, @RequestBody Todo updated) {
+    public ResponseEntity<String> updateTodo(@PathVariable String id, @RequestBody Todo updated) {
         String error = service.validateTodo(updated);
         if (error != null) return ResponseEntity.badRequest().body(error);
 
-        Todo result = service.updateTodo(id, updated);
-        return result != null ? ResponseEntity.ok(result) : ResponseEntity.notFound().build();
+        boolean updatedSuccessfully = service.updateTodo(id, updated) != null;
+        return updatedSuccessfully
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
     }
 
     @PostMapping("/{id}/done")
@@ -70,7 +74,7 @@ public class TodoController {
     }
 
     @GetMapping("/averages")
-    public ResponseEntity<Map<String, Object>> getAverages() {
+    public ResponseEntity<AverageCompletionTimes> getAverages() {
         return ResponseEntity.ok(service.getAverageCompletionTimes());
     }
 }
