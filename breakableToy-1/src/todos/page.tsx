@@ -11,9 +11,10 @@ export default function DemoPage() {
   const [totalPages, setTotalPages] = useState();
   const [status, setStatus] = useState(["done", "undone"]);
   const [text, setText] = useState("");
+  const [sortBy, setSortBy] = useState("");
 
   useEffect(() => {
-    fetchTodos({ page, status, priority, text }).then((data) => {
+    fetchTodos({ page, status, priority, text, sortBy }).then((data) => {
       setRows(data.todos);
     });
   }, []);
@@ -34,6 +35,8 @@ export default function DemoPage() {
         total={total}
         totalPages={totalPages}
         setTotalPages={setTotalPages}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
         fetchTodos={fetchTodos}
       />
     </div>

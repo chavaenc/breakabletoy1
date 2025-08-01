@@ -20,7 +20,10 @@ export function DropdownMenuPriority({
   setData,
   status,
   page,
+  setPage,
   text,
+  totalPages,
+  sortBy,
 }) {
   const [lowStatusChecked, setLowChecked] = React.useState<Checked>(true);
   const [mediumStatusChecked, setMediumStatusChecked] =
@@ -35,12 +38,28 @@ export function DropdownMenuPriority({
   } = {}) => {
     try {
       setPriority(updatedPriority);
+      const tempResult = await fetchTodos({
+        text,
+        status: updatedStatus,
+        priority: updatedPriority,
+        page: 0,
+        sortBy,
+      });
+
+      let newPage = page;
+      if (tempResult.totalPages <= page) {
+        newPage = Math.max(tempResult.totalPages - 1, 0);
+        setPage(newPage);
+      }
+
       const result = await fetchTodos({
         text,
         status: updatedStatus,
         priority: updatedPriority,
-        page: page,
+        page: newPage,
+        sortBy,
       });
+
       setData(result.todos);
       setTotalPages(result.totalPages);
     } catch (err: any) {
@@ -53,18 +72,15 @@ export function DropdownMenuPriority({
     const newState = !currentState;
     setState(newState);
 
-    // Compute new priority manually, don't rely on state
     const newPriority = newState
       ? [...priority, fStr]
       : priority.filter((p) => p !== fStr);
 
-    // Fetch with this newPriority directly
     await getFilteredTodos({
       updatedPriority: newPriority,
       updatedStatus: status,
     });
 
-    // THEN update state to match what was used in fetch
     setPriority(newPriority);
   };
 

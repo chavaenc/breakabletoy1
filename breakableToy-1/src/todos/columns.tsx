@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../components/ui/button";
 import { ArrowUpDown, Check, PencilIcon, TrashIcon } from "lucide-react";
@@ -7,6 +7,7 @@ import { Checkbox } from "../components/ui/checkbox";
 import UpdateTodo from "./updateTodo";
 import { markDone, markUndone } from "./api/updateTodo";
 import { deleteTodo } from "./api/deleteTodo";
+import { setPriority } from "os";
 type ColumnsProps = {
   setRows: React.Dispatch<React.SetStateAction<Todo[]>>;
   setTotalPages: React.Dispatch<React.SetStateAction<number>>;
@@ -14,6 +15,12 @@ type ColumnsProps = {
   getAverages: any;
   setMetricData: any;
   metricData: any;
+  sortBy: any;
+  setSortBy: any;
+  text: string;
+  status: any;
+  page: any;
+  priority: any;
 };
 export type Todo = {
   id: string;
@@ -24,6 +31,9 @@ export type Todo = {
   creationDate: Date;
   doneDate: Date | null;
 };
+let order: "" | "_desc" = "";
+let dateOrder: "" | "_desc" = "";
+let newSort = "";
 
 export function getColumns({
   setRows,
@@ -32,6 +42,12 @@ export function getColumns({
   getAverages,
   setMetricData,
   metricData,
+  sortBy,
+  setSortBy,
+  text,
+  priority,
+  status,
+  page,
 }: ColumnsProps): ColumnDef<Todo>[] {
   return [
     {
@@ -49,7 +65,13 @@ export function getColumns({
               markUndone(todo.id);
             }
 
-            const updated = await fetchTodos();
+            const updated = await fetchTodos({
+              text,
+              priority,
+              status,
+              page,
+              sortBy,
+            });
             setRows(updated.todos);
             setTotalPages(updated.totalPages);
             getAverages();
@@ -58,7 +80,6 @@ export function getColumns({
           }
         };
 
-        console.log("STATUs", row.original.done);
         return (
           <Checkbox
             checked={todo.done}
@@ -74,69 +95,43 @@ export function getColumns({
     {
       accessorKey: "text",
       header: () => <div className="text-center">Name</div>,
+      cell: ({ row }) => {
+        return <div className="text-center">{row.original.text}</div>;
+      },
     },
     {
       accessorKey: "priority",
-      header: ({ column }) => (
-        <div className="text-center">
-          <Button
-            className="text-center"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            {" "}
-            Priority
-            <ArrowUpDown className="ml-2 h-4 w-4 text-center" />
-          </Button>
-        </div>
-      ),
-      sortingFn: (rowA, rowB, columnId) => {
-        if (rowA.original.priority === "high") {
-          if (rowB.original.priority === "medium") {
-            return 1;
-          } else if (rowB.original.priority === "low") {
-            return 1;
-          } else {
-            return 0;
-          }
-        } else if (rowA.original.priority === "medium") {
-          if (rowB.original.priority === "high") {
-            return -1;
-          } else if (rowB.original.priority === "low") {
-            return 1;
-          } else {
-            return 0;
-          }
-        } else if (rowA.original.priority === "low") {
-          if (rowB.original.priority === "high") {
-            return -1;
-          } else if (rowB.original.priority === "medium") {
-            return -1;
-          } else {
-            return 0;
-          }
-        }
-        return 0;
+      header: ({ column }) => {
+        return (
+          <div className="text-center">
+            <Button
+              className="text-center"
+              variant="ghost"
+              onClick={async () => {
+                order = order === "" ? "_desc" : "";
+
+                newSort = "priority" + order;
+                setSortBy(newSort);
+                const data = await fetchTodos({
+                  text,
+                  page,
+                  status,
+                  priority,
+                  sortBy: newSort,
+                });
+                setRows(data.todos);
+              }}
+            >
+              {" "}
+              Priority
+              <ArrowUpDown className="ml-2 h-4 w-4 text-center" />
+            </Button>
+          </div>
+        );
       },
       cell: ({ row }) => {
-        let backgroundColor = "";
-        switch (row.getValue("priority")) {
-          case "low":
-            backgroundColor = "green";
-            break;
-          case "medium":
-            backgroundColor = "yellow";
-            break;
-          case "high":
-            backgroundColor = "red";
-            break;
-          default:
-            backgroundColor = "white";
-            break;
-        }
-        return <div className="">{row.getValue("priority")}</div>;
+        return <div className="font-bold">{row.getValue("priority")}</div>;
       },
-      filterFn: "arrIncludesSome",
     },
     {
       accessorKey: "dueDate",
@@ -146,9 +141,19 @@ export function getColumns({
           <div className="text-center">
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={async () => {
+                dateOrder = dateOrder === "" ? "_desc" : "";
+                newSort = "dueDate" + dateOrder;
+                setSortBy(newSort);
+                const data = await fetchTodos({
+                  text,
+                  page,
+                  status,
+                  priority,
+                  sortBy: newSort,
+                });
+                setRows(data.todos);
+              }}
             >
               {" "}
               Due Date
@@ -159,15 +164,11 @@ export function getColumns({
       },
       cell: ({ row }) => {
         if (row.getValue("dueDate")) {
-          const date = new Date(row.getValue("dueDate"));
-          const formatted =
-            date.getMonth() +
-            1 +
-            "/" +
-            date.getDay() +
-            "/" +
-            date.getFullYear();
-          return <div className="font-medium">{formatted}</div>;
+          const date = new Date(row.getValue("dueDate"))
+            .toISOString()
+            .split("T")[0];
+
+          return <div className="font-medium">{date}</div>;
         } else {
           return <div>No due date</div>;
         }
@@ -177,16 +178,27 @@ export function getColumns({
       id: "actions",
       cell: ({ row }) => {
         const id = row.original.id;
-        const text = row.original.text;
-        const dueDate = row.original.dueDate;
-        const priority = row.original.priority;
+        const otext = row.original.text;
+        const odueDate = row.original.dueDate;
+        const opriority = row.original.priority;
 
         return (
           <>
-            <div className="flex gap-1 p-1">
+            <div className="flex gap-1 p-1 ">
               <Button
                 onClick={() => {
-                  deleteTodo(fetchTodos, setRows, setTotalPages, id);
+                  deleteTodo(
+                    fetchTodos,
+                    setRows,
+                    setTotalPages,
+                    id,
+                    status,
+                    priority,
+                    page,
+                    text,
+                    sortBy,
+                    setMetricData
+                  );
                 }}
                 variant="outline"
                 className="h-5 w-5 p-3"
@@ -196,11 +208,16 @@ export function getColumns({
               <UpdateTodo
                 id={id}
                 fetchTodos={fetchTodos}
-                otext={text}
-                odueDate={dueDate}
-                opriority={priority}
+                otext={otext}
+                odueDate={odueDate}
+                opriority={opriority}
                 setRows={setRows}
                 setTotalPages={setTotalPages}
+                status={status}
+                priorityFilter={priority}
+                page={page}
+                textFilter={text}
+                sortBy={sortBy}
               />
             </div>
           </>
