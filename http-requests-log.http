@@ -1,432 +1,6 @@
-POST http://localhost:8080/todos
+### Create Mock Todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 87
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Improve form validation",
-  "priority": "LOW",
-  "dueDate": "2025-08-14"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 89
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Test multi-user features",
-  "priority": "HIGH",
-  "dueDate": "2025-08-13"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 89
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Optimize image loading",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-08"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Add missing translations",
-  "priority": "LOW",
-  "dueDate": "2025-08-07"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 87
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Refactor service layer",
-  "priority": "HIGH",
-  "dueDate": "2025-08-05"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 82
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Prepare Q3 OKRs",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-12"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 84
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Fix timezone issues",
-  "priority": "HIGH",
-  "dueDate": "2025-08-06"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 94
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Research performance tuning",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-09"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 92
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Create team onboarding guide",
-  "priority": "LOW",
-  "dueDate": "2025-08-15"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 85
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Backup production DB",
-  "priority": "HIGH",
-  "dueDate": "2025-08-03"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Schedule user testing",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-11"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 80
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Check error logs",
-  "priority": "LOW",
-  "dueDate": "2025-08-01"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Write integration tests",
-  "priority": "HIGH",
-  "dueDate": "2025-08-10"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 94
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Conduct accessibility audit",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-08"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 86
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Clean up unused assets",
-  "priority": "LOW",
-  "dueDate": "2025-08-06"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 86
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Update CI/CD pipeline",
-  "priority": "HIGH",
-  "dueDate": "2025-08-04"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Fix UI responsiveness",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-13"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 85
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Analyze user feedback",
-  "priority": "LOW",
-  "dueDate": "2025-08-11"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Create test scenarios",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-09"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 91
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Deploy staging environment",
-  "priority": "HIGH",
-  "dueDate": "2025-08-02"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 81
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Organize codebase",
-  "priority": "LOW",
-  "dueDate": "2025-08-14"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 91
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Team meeting preparation",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-07"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 84
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Update documentation",
-  "priority": "LOW",
-  "dueDate": "2025-08-12"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 82
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Fix critical bugs",
-  "priority": "HIGH",
-  "dueDate": "2025-07-31"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 94
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Prepare demo for stakeholders",
-  "priority": "HIGH",
-  "dueDate": "2025-08-03"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 87
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Review pull requests",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-01"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 86
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Design homepage layout",
-  "priority": "LOW",
-  "dueDate": "2025-08-15"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 120
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-
-Content-Type: application/json  "text": "Refactor backend logic",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-05"
-}
-
-<> 2025-07-31T195756.400.json
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 83
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
   "text": "Write project plan",
@@ -436,312 +10,89 @@ Accept: */*
 
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 87
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
-  "text": "Improve form validation",
-  "priority": "LOW",
-  "dueDate": "2025-08-14"
-}
 
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 89
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Test multi-user features",
-  "priority": "HIGH",
-  "dueDate": "2025-08-13"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 89
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Optimize image loading",
+Content-Type: application/json  "text": "Refactor backend logic",
   "priority": "MEDIUM",
-  "dueDate": "2025-08-08"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Add missing translations",
-  "priority": "LOW",
-  "dueDate": "2025-08-07"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 87
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Refactor service layer",
-  "priority": "HIGH",
   "dueDate": "2025-08-05"
 }
 
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 82
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Prepare Q3 OKRs",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-12"
-}
+<> 2025-08-01T151511.400.json
+<> 2025-07-31T195756.400.json
 
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 84
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
-  "text": "Fix timezone issues",
-  "priority": "HIGH",
-  "dueDate": "2025-08-06"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 94
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Research performance tuning",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-09"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 92
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Create team onboarding guide",
+  "text": "Design homepage layout",
   "priority": "LOW",
   "dueDate": "2025-08-15"
 }
 
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 85
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
-  "text": "Backup production DB",
+  "text": "Review pull requests",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-01"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Prepare demo for stakeholders",
   "priority": "HIGH",
   "dueDate": "2025-08-03"
 }
 
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
-  "text": "Schedule user testing",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-11"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 80
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Check error logs",
-  "priority": "LOW",
-  "dueDate": "2025-08-01"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Write integration tests",
+  "text": "Fix critical bugs",
   "priority": "HIGH",
-  "dueDate": "2025-08-10"
+  "dueDate": "2025-07-31"
 }
 
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 94
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
-  "text": "Conduct accessibility audit",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-08"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 86
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Clean up unused assets",
+  "text": "Update documentation",
   "priority": "LOW",
-  "dueDate": "2025-08-06"
+  "dueDate": "2025-08-12"
 }
 
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 86
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
-  "text": "Update CI/CD pipeline",
-  "priority": "HIGH",
-  "dueDate": "2025-08-04"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Fix UI responsiveness",
+  "text": "Team meeting preparation",
   "priority": "MEDIUM",
-  "dueDate": "2025-08-13"
+  "dueDate": "2025-08-07"
 }
 
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:9090/todos
 Content-Type: application/json
-Content-Length: 85
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Analyze user feedback",
-  "priority": "LOW",
-  "dueDate": "2025-08-11"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 88
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Create test scenarios",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-09"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 91
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-
-{
-  "text": "Deploy staging environment",
-  "priority": "HIGH",
-  "dueDate": "2025-08-02"
-}
-
-###
-
-POST http://localhost:8080/todos
-Content-Type: application/json
-Content-Length: 81
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.4.1
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
 
 {
   "text": "Organize codebase",
@@ -751,3 +102,220 @@ Accept: */*
 
 ###
 
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Deploy staging environment",
+  "priority": "HIGH",
+  "dueDate": "2025-08-02"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Create test scenarios",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-09"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Analyze user feedback",
+  "priority": "LOW",
+  "dueDate": "2025-08-11"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Fix UI responsiveness",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-13"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Update CI/CD pipeline",
+  "priority": "HIGH",
+  "dueDate": "2025-08-04"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Clean up unused assets",
+  "priority": "LOW",
+  "dueDate": "2025-08-06"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Conduct accessibility audit",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-08"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Write integration tests",
+  "priority": "HIGH",
+  "dueDate": "2025-08-10"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Check error logs",
+  "priority": "LOW",
+  "dueDate": "2025-08-01"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Schedule user testing",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-11"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Backup production DB",
+  "priority": "HIGH",
+  "dueDate": "2025-08-03"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Create team onboarding guide",
+  "priority": "LOW",
+  "dueDate": "2025-08-15"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Research performance tuning",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-09"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Fix timezone issues",
+  "priority": "HIGH",
+  "dueDate": "2025-08-06"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Prepare Q3 OKRs",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-12"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Refactor service layer",
+  "priority": "HIGH",
+  "dueDate": "2025-08-05"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Add missing translations",
+  "priority": "LOW",
+  "dueDate": "2025-08-07"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Optimize image loading",
+  "priority": "MEDIUM",
+  "dueDate": "2025-08-08"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Test multi-user features",
+  "priority": "HIGH",
+  "dueDate": "2025-08-13"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Improve form validation",
+  "priority": "LOW",
+  "dueDate": "2025-08-14"
+}
