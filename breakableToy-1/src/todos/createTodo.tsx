@@ -72,7 +72,7 @@ export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
               Create a new todo here. Click save when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4">
+          <div className="grid gap-4 pt-2">
             <div className="grid gap-3">
               <Label htmlFor="text">Name</Label>
               <Input
@@ -127,8 +127,10 @@ export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
                     align="start"
                   >
                     <Calendar
+                      defaultMonth={date}
                       mode="single"
                       selected={date}
+                      toYear={2100}
                       captionLayout="dropdown"
                       onSelect={(date) => {
                         setDate(date);

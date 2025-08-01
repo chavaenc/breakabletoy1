@@ -3,7 +3,6 @@ export const getAverages = (setMetricData) => {
   fetch(`${API_URL}/averages`)
     .then((res) => res.json())
     .then((data) => {
-      console.log(data);
       setMetricData(data);
     });
 };
@@ -48,7 +47,6 @@ export async function fetchTodos(
   if (params.priority && Array.isArray(params.priority)) {
     params.priority.forEach((p) => {
       query.append("priority", p);
-      console.log(p);
     });
   }
   if (params.sortBy) query.append("sortBy", params.sortBy);

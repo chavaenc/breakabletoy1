@@ -1,4 +1,5 @@
 import { API_URL } from "@/config";
+import { getAverages } from "./fetchTodos";
 
 export const deleteTodo = async (
   fetchTodos,
@@ -9,7 +10,8 @@ export const deleteTodo = async (
   priority,
   page,
   text,
-  sortBy
+  sortBy,
+  setMetricData
 ) => {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
@@ -22,8 +24,9 @@ export const deleteTodo = async (
     }
 
     const updated = await fetchTodos({ status, priority, page, text, sortBy });
+    getAverages(setMetricData);
     setRows(updated.todos);
-    setTotalPages(updated.totalPages);
+    setTotalPages(updated.totalPagesp);
   } catch (err) {
     console.error("Delete failed:", err);
   }

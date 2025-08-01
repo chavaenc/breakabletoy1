@@ -10,9 +10,11 @@ export default function Filters({
   fetchTodos,
   setTotalPages,
   page,
+  setPage,
   status,
   text,
   setText,
+  totalPages,
   setStatus,
   setData,
   sortBy,
@@ -23,21 +25,29 @@ export default function Filters({
     priority,
     page,
     setTotalPages,
+    sortBy,
   }) => {
-    // const params = new URLSearchParams();
+    const previewRes = await fetchTodos({
+      text,
+      status,
+      priority,
+      page: 0,
+      sortBy,
+    });
 
-    // params.append("page", page.toString());
-    // params.append("size", "10");
+    const validTotalPages = previewRes.totalPages;
+    const validPage = Math.min(page, validTotalPages - 1);
 
-    // status.forEach((s) => params.append("status", s));
-    // priority.forEach((p) => params.append("priority", p));
+    const res = await fetchTodos({
+      text,
+      status,
+      priority,
+      page: validPage,
+      sortBy,
+    });
 
-    // if (text && text.trim()) {
-    //   params.append("text", text.trim());
-    // }
-
-    const res = await fetchTodos({ text, status, priority, page });
-    setTotalPages(res.totalPages);
+    setTotalPages(validTotalPages);
+    setPage(validPage);
     setData(res.todos);
   };
 
@@ -62,6 +72,7 @@ export default function Filters({
               status: status,
               priority: priority,
               page: 0,
+              sortBy: sortBy,
               setTotalPages: setTotalPages,
             });
           }}
@@ -72,7 +83,9 @@ export default function Filters({
           setPriority={setPriority}
           fetchTodos={fetchTodos}
           setTotalPages={setTotalPages}
+          setPage={setPage}
           text={text}
+          totalPages={totalPages}
           setData={setData}
           page={page}
           sortBy={sortBy}
@@ -83,6 +96,8 @@ export default function Filters({
           text={text}
           page={page}
           status={status}
+          totalPages={totalPages}
+          setPage={setPage}
           priority={priority}
           setStatus={setStatus}
           fetchTodos={fetchTodos}

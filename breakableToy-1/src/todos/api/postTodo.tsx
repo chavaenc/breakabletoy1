@@ -30,8 +30,6 @@ export const postTodo = async ({
       throw new Error(await response.text());
     }
 
-    const result = await response.json();
-    console.log("Created:", result);
     setText("");
     setDate(undefined);
     setPriority("");

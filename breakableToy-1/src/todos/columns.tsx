@@ -80,7 +80,6 @@ export function getColumns({
           }
         };
 
-        console.log("STATUs", row.original.done);
         return (
           <Checkbox
             checked={todo.done}
@@ -96,6 +95,9 @@ export function getColumns({
     {
       accessorKey: "text",
       header: () => <div className="text-center">Name</div>,
+      cell: ({ row }) => {
+        return <div className="text-center">{row.original.text}</div>;
+      },
     },
     {
       accessorKey: "priority",
@@ -128,7 +130,7 @@ export function getColumns({
         );
       },
       cell: ({ row }) => {
-        return <div className="">{row.getValue("priority")}</div>;
+        return <div className="font-bold">{row.getValue("priority")}</div>;
       },
     },
     {
@@ -162,15 +164,11 @@ export function getColumns({
       },
       cell: ({ row }) => {
         if (row.getValue("dueDate")) {
-          const date = new Date(row.getValue("dueDate"));
-          const formatted =
-            date.getMonth() +
-            1 +
-            "/" +
-            date.getDay() +
-            "/" +
-            date.getFullYear();
-          return <div className="font-medium">{formatted}</div>;
+          const date = new Date(row.getValue("dueDate"))
+            .toISOString()
+            .split("T")[0];
+
+          return <div className="font-medium">{date}</div>;
         } else {
           return <div>No due date</div>;
         }
@@ -186,7 +184,7 @@ export function getColumns({
 
         return (
           <>
-            <div className="flex gap-1 p-1">
+            <div className="flex gap-1 p-1 ">
               <Button
                 onClick={() => {
                   deleteTodo(
@@ -198,7 +196,8 @@ export function getColumns({
                     priority,
                     page,
                     text,
-                    sortBy
+                    sortBy,
+                    setMetricData
                   );
                 }}
                 variant="outline"

@@ -20,6 +20,8 @@ export function DropdownMenuStatus({
   setStatus,
   setData,
   text,
+  totalPages,
+  setPage,
   sortBy,
 }) {
   const [doneStatusChecked, setDoneStatusChecked] = useState<Checked>(true);
@@ -33,15 +35,28 @@ export function DropdownMenuStatus({
   } = {}) => {
     try {
       setStatus(updatedStatus);
+
+      const previewResult = await fetchTodos({
+        text,
+        status: updatedStatus,
+        priority: updatedPriority,
+        page: 0,
+        sortBy,
+      });
+
+      const validTotalPages = previewResult.totalPages;
+      const validPage = Math.min(page, validTotalPages - 1);
+
       const result = await fetchTodos({
         text,
         status: updatedStatus,
         priority: updatedPriority,
-        page: page,
+        page: validPage,
         sortBy,
       });
+
       setData(result.todos);
-      setTotalPages(result.totalPages);
+      setTotalPages(validTotalPages);
     } catch (err: any) {
       console.log(err);
       setError(err.message);
@@ -52,18 +67,15 @@ export function DropdownMenuStatus({
     const newState = !currentState;
     setState(newState);
 
-    // Compute new priority manually, don't rely on state
     const newStatus = newState
       ? [...status, fStr]
       : status.filter((p) => p !== fStr);
 
-    // Fetch with this newPriority directly
     await getFilteredTodos({
       updatedPriority: priority,
       updatedStatus: newStatus,
     });
 
-    // THEN update state to match what was used in fetch
     setStatus(newStatus);
   };
 
@@ -85,7 +97,7 @@ export function DropdownMenuStatus({
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={doneStatusChecked}
-          onCheckedChange={(e) => {
+          onCheckedChange={() => {
             updateFilter("done", setDoneStatusChecked, doneStatusChecked);
           }}
           onSelect={(e) => {

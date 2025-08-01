@@ -21,7 +21,6 @@ import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group";
 import { Calendar } from "../components/ui/calendar";
 import { Button } from "../components/ui/button";
 import { useFormStatus } from "react-dom";
-import { fetchTodos } from "./page";
 import { updateTodo } from "./api/updateTodo";
 import { Input } from "../components/ui/input";
 import type { Todo } from "./columns";
@@ -109,7 +108,7 @@ export default function UpdateTodo({
               Update a todo here. Click save when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4">
+          <div className="grid gap-4 pt-2">
             <div className="grid gap-3">
               <Label htmlFor="text">Name</Label>
               <Input
@@ -150,16 +149,28 @@ export default function UpdateTodo({
                   Due Date
                 </Label>
                 <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
+                  <div className="flex gap-3">
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        id="date-picker"
+                        className="w-32 justify-between font-normal"
+                      >
+                        {date ? date.toLocaleDateString() : "Select date"}
+                        <ChevronDownIcon />
+                      </Button>
+                    </PopoverTrigger>
                     <Button
-                      variant="outline"
-                      id="date-picker"
-                      className="w-32 justify-between font-normal"
+                      variant={"secondary"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDate(null);
+                      }}
                     >
-                      {date ? date.toLocaleDateString() : "Select date"}
-                      <ChevronDownIcon />
+                      Clear due date
                     </Button>
-                  </PopoverTrigger>
+                  </div>
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start"

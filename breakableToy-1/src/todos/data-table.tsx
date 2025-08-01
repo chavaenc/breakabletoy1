@@ -116,7 +116,8 @@ export function DataTable<TData, TValue>({
   }
 
   useEffect(() => {
-    fetchTodos({ page, priority, status, sortBy }).then((data) => {
+    fetchTodos({ page, priority, status, sortBy, text }).then((data) => {
+      getAverages(setMetricData);
       setRows(data.todos);
       setTotalPages(data.totalPages);
     });
@@ -131,6 +132,8 @@ export function DataTable<TData, TValue>({
         fetchTodos={fetchTodos}
         text={text}
         setTotalPages={setTotalPages}
+        setPage={setPage}
+        totalPages={totalPages}
         status={status}
         setStatus={setStatus}
         page={page}
@@ -140,26 +143,39 @@ export function DataTable<TData, TValue>({
       />
       <CreateTodo
         setData={setRows}
-        fetchTodos={() => fetchTodos({ page, status, priority, sortBy })}
+        fetchTodos={() => fetchTodos({ page, status, priority, sortBy, text })}
         setTotalPages={setTotalPages}
       />
-      <div className="flex mb-4"></div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="flex mb-4  "></div>
+      <div className="rounded-md border mx-auto w-[90%]">
+        <Table className="px-0 table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} className="text-center">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
+                  if (header.id == "text") {
+                    return (
+                      <TableHead key={header.id} className="text-center  w-1/3">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  } else {
+                    return (
+                      <TableHead key={header.id} className="text-center">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  }
                 })}
               </TableRow>
             ))}
@@ -223,30 +239,55 @@ export function DataTable<TData, TValue>({
           </PaginationContent>
         </Pagination>
       </div>
-      <div>
-        <h3>Average time to finish tasks:</h3>
-        <p>
-          {metricData?.averageTime} mins, (
-          {(metricData?.averageTime / 60)?.toPrecision(3)} hours) or (
-          {(metricData?.averageTime / 60 / 24)?.toPrecision(3)} days)
-        </p>
+      <div className="flex bg-white shadow-md rounded-md p-6 space-y-6 justify-around items-center">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            Average Time to Finish Tasks
+          </h3>
+          <p className="text-gray-700">
+            <span className="font-medium text-blue-600">
+              {metricData?.averageTime?.toFixed(2)}
+            </span>{" "}
+            mins, (
+            <span className="font-medium text-green-600">
+              {(metricData?.averageTime / 60)?.toPrecision(3)}
+            </span>{" "}
+            hours or{" "}
+            <span className="font-medium text-purple-600">
+              {(metricData?.averageTime / 60 / 24)?.toPrecision(3)}
+            </span>{" "}
+            days)
+          </p>
+        </div>
 
-        <h3>Average time to finish tasks by priority:</h3>
-        <p>
-          Low: {metricData?.byPriority.low} mins, (
-          {(metricData?.byPriority.low / 60)?.toPrecision(3)} hours) or (
-          {(metricData?.byPriority.low / 60 / 24)?.toPrecision(3)} days)
-        </p>
-        <p>
-          Medium: {metricData?.byPriority.medium} mins, (
-          {(metricData?.byPriority.medium / 60)?.toPrecision(3)} hours) or (
-          {(metricData?.byPriority.medium / 60 / 24)?.toPrecision(3)} days)
-        </p>
-        <p>
-          High: {metricData?.byPriority.high} mins, (
-          {(metricData?.byPriority.high / 60)?.toPrecision(3)} hours) or (
-          {(metricData?.byPriority.high / 60 / 24)?.toPrecision(3)} days)
-        </p>
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            Average Time by Priority
+          </h3>
+          <ul className="space-y-2">
+            <li className="text-gray-700">
+              <span className="font-semibold text-yellow-500">Low:</span>{" "}
+              {metricData?.byPriority?.low?.toFixed(2)} mins (
+              {(metricData?.byPriority?.low / 60)?.toPrecision(3)} hours{" "}
+              {" or "}
+              {(metricData?.byPriority?.low / 60 / 24)?.toPrecision(3)} days)
+            </li>
+            <li className="text-gray-700">
+              <span className="font-semibold text-blue-500">Medium:</span>{" "}
+              {metricData?.byPriority?.medium?.toFixed(2)} mins (
+              {(metricData?.byPriority.medium / 60)?.toPrecision(3)} hours{" "}
+              {" or "}
+              {(metricData?.byPriority.medium / 60 / 24)?.toPrecision(3)} days)
+            </li>
+            <li className="text-gray-700">
+              <span className="font-semibold text-red-500">High:</span>{" "}
+              {metricData?.byPriority?.high?.toFixed(2)} mins (
+              {(metricData?.byPriority?.high / 60)?.toPrecision(3)} hours{" "}
+              {" or "}
+              {(metricData?.byPriority?.high / 60 / 24)?.toPrecision(3)} days)
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
@@ -280,7 +321,10 @@ const RowBgColor = ({ row }) => {
       style={{ backgroundColor: bgColor, textDecoration: textDeco }}
     >
       {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>
+        <TableCell
+          className="truncate overflow-hidden text-ellipsis whitespace-nowrap"
+          key={cell.id}
+        >
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
       ))}
