@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @CrossOrigin(
-        origins = "http://localhost:5173",
+        origins = "http://localhost:8080",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
         allowedHeaders = "*"
 )
