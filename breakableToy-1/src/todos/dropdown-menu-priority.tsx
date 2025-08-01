@@ -21,6 +21,7 @@ export function DropdownMenuPriority({
   status,
   page,
   text,
+  sortBy,
 }) {
   const [lowStatusChecked, setLowChecked] = React.useState<Checked>(true);
   const [mediumStatusChecked, setMediumStatusChecked] =
@@ -40,6 +41,7 @@ export function DropdownMenuPriority({
         status: updatedStatus,
         priority: updatedPriority,
         page: page,
+        sortBy,
       });
       setData(result.todos);
       setTotalPages(result.totalPages);

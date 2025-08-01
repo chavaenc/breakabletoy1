@@ -48,6 +48,8 @@ interface DataTableProps<TData, TValue> {
   text: any;
   setDone: any;
   setText: any;
+  sortBy: string;
+  setSortBy: any;
 }
 
 export function DataTable<TData, TValue>({
@@ -62,6 +64,8 @@ export function DataTable<TData, TValue>({
   setPriority,
   status,
   setStatus,
+  sortBy,
+  setSortBy,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -69,24 +73,25 @@ export function DataTable<TData, TValue>({
   );
   const [totalPages, setTotalPages] = useState(0);
   const [metricData, setMetricData] = useState();
+  const [page, setPage] = useState(0);
 
   const table = useReactTable({
     data: rows,
     columns: getColumns({
       setRows,
       setTotalPages,
-      fetchTodos: () =>
-        fetchTodos({
-          text,
-          page,
-          status,
-          priority,
-        }),
+      fetchTodos,
       getAverages: () => {
         getAverages(setMetricData);
       },
       metricData,
       setMetricData,
+      sortBy,
+      setSortBy,
+      text,
+      priority,
+      status,
+      page,
     }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -110,9 +115,8 @@ export function DataTable<TData, TValue>({
     status: string;
   }
 
-  const [page, setPage] = useState(0);
   useEffect(() => {
-    fetchTodos({ page, priority, status }).then((data) => {
+    fetchTodos({ page, priority, status, sortBy }).then((data) => {
       setRows(data.todos);
       setTotalPages(data.totalPages);
     });
@@ -132,10 +136,11 @@ export function DataTable<TData, TValue>({
         page={page}
         setData={setRows}
         setText={setText}
+        sortBy={sortBy}
       />
       <CreateTodo
         setData={setRows}
-        fetchTodos={() => fetchTodos({ page, status, priority })}
+        fetchTodos={() => fetchTodos({ page, status, priority, sortBy })}
         setTotalPages={setTotalPages}
       />
       <div className="flex mb-4"></div>

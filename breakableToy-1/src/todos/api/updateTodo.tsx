@@ -9,7 +9,12 @@ export async function updateTodo(
   },
   setRows,
   setTotalPages,
-  fetchTodos
+  fetchTodos,
+  status,
+  priorityFilter,
+  text,
+  page,
+  sortBy
 ) {
   try {
     console.log("ola");
@@ -27,7 +32,13 @@ export async function updateTodo(
       throw new Error(`Failed to update todo: ${errorText}`);
     }
     // setDialogOpen(false);
-    const updated = await fetchTodos();
+    const updated = await fetchTodos({
+      status: status,
+      priority: priorityFilter,
+      page: page,
+      text: text,
+      sortBy: sortBy,
+    });
 
     setRows(updated.todos);
     setTotalPages(updated.totalPages);

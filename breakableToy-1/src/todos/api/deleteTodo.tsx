@@ -1,6 +1,16 @@
 import { API_URL } from "@/config";
 
-export const deleteTodo = async (fetchTodos, setRows, setTotalPages, id) => {
+export const deleteTodo = async (
+  fetchTodos,
+  setRows,
+  setTotalPages,
+  id,
+  status,
+  priority,
+  page,
+  text,
+  sortBy
+) => {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
@@ -11,7 +21,7 @@ export const deleteTodo = async (fetchTodos, setRows, setTotalPages, id) => {
       throw new Error(msg || "Failed to delete");
     }
 
-    const updated = await fetchTodos();
+    const updated = await fetchTodos({ status, priority, page, text, sortBy });
     setRows(updated.todos);
     setTotalPages(updated.totalPages);
   } catch (err) {

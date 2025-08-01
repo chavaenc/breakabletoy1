@@ -15,21 +15,29 @@ export default function Filters({
   setText,
   setStatus,
   setData,
+  sortBy,
 }) {
-  const getFilteredTodos = async ({ text, status, priority, page }) => {
-    const params = new URLSearchParams();
+  const getFilteredTodos = async ({
+    text,
+    status,
+    priority,
+    page,
+    setTotalPages,
+  }) => {
+    // const params = new URLSearchParams();
 
-    params.append("page", page.toString());
-    params.append("size", "10");
+    // params.append("page", page.toString());
+    // params.append("size", "10");
 
-    status.forEach((s) => params.append("status", s));
-    priority.forEach((p) => params.append("priority", p));
+    // status.forEach((s) => params.append("status", s));
+    // priority.forEach((p) => params.append("priority", p));
 
-    if (text && text.trim()) {
-      params.append("text", text.trim());
-    }
+    // if (text && text.trim()) {
+    //   params.append("text", text.trim());
+    // }
 
     const res = await fetchTodos({ text, status, priority, page });
+    setTotalPages(res.totalPages);
     setData(res.todos);
   };
 
@@ -54,6 +62,7 @@ export default function Filters({
               status: status,
               priority: priority,
               page: 0,
+              setTotalPages: setTotalPages,
             });
           }}
         />
@@ -66,6 +75,7 @@ export default function Filters({
           text={text}
           setData={setData}
           page={page}
+          sortBy={sortBy}
           status={status}
         />
         <DropdownMenuStatus
@@ -77,6 +87,7 @@ export default function Filters({
           setStatus={setStatus}
           fetchTodos={fetchTodos}
           setTotalPages={setTotalPages}
+          sortBy={sortBy}
           setData={setData}
         />
         {table.getmodel}

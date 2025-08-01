@@ -20,6 +20,7 @@ export function DropdownMenuStatus({
   setStatus,
   setData,
   text,
+  sortBy,
 }) {
   const [doneStatusChecked, setDoneStatusChecked] = useState<Checked>(true);
   const [pendingStatusChecked, setPendingStatusChecked] =
@@ -37,6 +38,7 @@ export function DropdownMenuStatus({
         status: updatedStatus,
         priority: updatedPriority,
         page: page,
+        sortBy,
       });
       setData(result.todos);
       setTotalPages(result.totalPages);

@@ -34,6 +34,11 @@ export default function UpdateTodo({
   setRows,
   fetchTodos,
   setTotalPages,
+  status,
+  priorityFilter,
+  textFilter,
+  sortBy,
+  page,
 }) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -55,7 +60,12 @@ export default function UpdateTodo({
       },
       setRows,
       setTotalPages,
-      fetchTodos
+      fetchTodos,
+      status,
+      priorityFilter,
+      textFilter,
+      page,
+      sortBy
     );
   };
 
