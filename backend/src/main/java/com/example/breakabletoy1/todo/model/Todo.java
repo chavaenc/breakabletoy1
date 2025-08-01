@@ -17,5 +17,6 @@ public class Todo {
     private Priority priority;
     private LocalDate creationDate;
 
-
+    public Todo() {
+    }
 }
