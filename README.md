@@ -22,7 +22,7 @@ This app allows users to manage their daily tasks efficiently. It includes the f
 
 ### ✅ Requirements
 
-- Java 17 or higher
+- Java 21
 - Maven installed (`mvn -v` to check)
 
 ### ▶️ Run the backend
