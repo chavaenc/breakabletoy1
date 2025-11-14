@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -16,89 +17,91 @@ import {
 } from "../components/ui/popover";
 import { Label } from "../components/ui/label";
 import { DialogClose } from "../components/ui/dialog";
-import { ChevronDownIcon, Italic, PencilIcon, TrashIcon } from "lucide-react";
+import { ChevronDownIcon, PencilIcon } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group";
 import { Calendar } from "../components/ui/calendar";
 import { Button } from "../components/ui/button";
-import { useFormStatus } from "react-dom";
 import { updateTodo } from "./api/updateTodo";
 import { Input } from "../components/ui/input";
-import type { Todo } from "./columns";
+import { useTodos } from "./TodosContext";
 
 export default function UpdateTodo({
   id,
   otext,
   odueDate,
   opriority,
-  setRows,
-  fetchTodos,
-  setTotalPages,
-  status,
-  priorityFilter,
-  textFilter,
-  sortBy,
-  page,
+}: {
+  id: string;
+  otext: string;
+  odueDate: Date | null;
+  opriority: "high" | "low" | "medium";
 }) {
+  const { refreshTodos } = useTodos();
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [text, setText] = useState("");
-  const [priority, setPriority] = useState<"HIGH" | "MEDIUM" | "LOW" | "">("");
+  const [localPriority, setLocalPriority] = useState<
+    "HIGH" | "MEDIUM" | "LOW" | ""
+  >("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting todo...");
-    const newDate = date?.toISOString().split("T")[0];
-    await updateTodo(
-      id,
-      {
-        text,
-        dueDate: newDate,
-        priority: priority.toUpperCase(),
-      },
-      setRows,
-      setTotalPages,
-      fetchTodos,
-      status,
-      priorityFilter,
-      textFilter,
-      page,
-      sortBy
-    );
+    setError(""); // Clear previous errors
+    try {
+      // Format date manually to avoid timezone issues
+      const newDate = date
+        ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}-${String(date.getDate()).padStart(2, "0")}`
+        : undefined;
+      await updateTodo(
+        id,
+        {
+          text,
+          dueDate: newDate,
+          priority: localPriority as "HIGH" | "MEDIUM" | "LOW",
+        },
+        async () => {
+          await refreshTodos();
+        }
+      );
+      setDialogOpen(false);
+      toast.success("Todo updated successfully!");
+    } catch (err) {
+      const errorMessage = (err as Error).message || "Failed to update todo";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error("Failed to update todo:", err);
+    }
   };
 
   useEffect(() => {
     setText(otext);
-    setPriority(opriority);
-    setDate(odueDate);
-  }, []);
+    setLocalPriority(opriority.toUpperCase() as "HIGH" | "MEDIUM" | "LOW");
+    setDate(odueDate ?? undefined);
+  }, [otext, opriority, odueDate]);
 
-  function Submit() {
-    const { pending } = useFormStatus();
-    return (
-      <Button type="submit" disabled={pending}>
-        {pending ? "Submitting..." : "Submit"}
-      </Button>
-    );
-  }
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button
           type="button"
-          variant="outline"
-          className="h-5 w-5 p-3"
-          onClick={(e) => {
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0 md:h-5 md:w-5 md:p-3 md:flex-1"
+          onClick={() => {
             setDialogOpen(true);
-            e.stopPropagation(); // Prevent row-level click handler from interfering
           }}
         >
-          <PencilIcon />
+          <PencilIcon className="h-3.5 w-3.5 md:h-auto md:w-auto" />
+          <span className="sr-only">Edit</span>
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-[425px]"
+        className="sm:max-w-[425px] "
         onClick={(e) => e.stopPropagation()}
       >
         <form onSubmit={handleSubmit}>
@@ -122,10 +125,10 @@ export default function UpdateTodo({
             <div className="grid gap-3">
               <Label htmlFor="priority">Priority</Label>
               <ToggleGroup
-                defaultValue={priority.toUpperCase()}
+                defaultValue={localPriority}
                 type="single"
                 onValueChange={(e) => {
-                  if (e) setPriority(e.toUpperCase() as any);
+                  if (e) setLocalPriority(e as "HIGH" | "MEDIUM" | "LOW");
                 }}
               >
                 <ToggleGroupItem value="HIGH" aria-label="Toggle high">
@@ -165,7 +168,7 @@ export default function UpdateTodo({
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setDate(null);
+                        setDate(undefined);
                       }}
                     >
                       Clear due date
@@ -188,9 +191,9 @@ export default function UpdateTodo({
                 </Popover>
               </div>
             </div>
-            <p>{error}</p>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>

@@ -1,5 +1,7 @@
 package com.example.breakabletoy1.todo.service;
 
+import com.example.breakabletoy1.todo.exception.TodoNotFoundException;
+import com.example.breakabletoy1.todo.exception.TodoValidationException;
 import com.example.breakabletoy1.todo.model.AverageCompletionTimes;
 import com.example.breakabletoy1.todo.model.PaginatedTodos;
 import com.example.breakabletoy1.todo.model.Todo;
@@ -72,6 +74,8 @@ public class TodoService {
     }
 
     public Todo createTodo(Todo todo) {
+        validateTodo(todo);
+        
         String id = UUID.randomUUID().toString();
         int randomDaysAgo = new Random().nextInt(30);
         LocalDate randomCreationDate = LocalDate.now().minusDays(randomDaysAgo);
@@ -86,6 +90,8 @@ public class TodoService {
     }
 
     public Todo updateTodo(String id, Todo updated) {
+        validateTodo(updated);
+        
         for (Todo existing : todos) {
             if (existing.getId().equals(id)) {
                 existing.setText(updated.getText());
@@ -94,33 +100,40 @@ public class TodoService {
                 return existing;
             }
         }
-        return null;
+        throw new TodoNotFoundException(id);
     }
 
-    public boolean markDone(String id) {
+    public void markDone(String id) {
         for (Todo todo : todos) {
-            if (todo.getId().equals(id) && !todo.isDone()) {
-                todo.setDone(true);
-                todo.setDoneDate(LocalDate.now());
-                return true;
+            if (todo.getId().equals(id)) {
+                if (!todo.isDone()) {
+                    todo.setDone(true);
+                    todo.setDoneDate(LocalDate.now());
+                }
+                return;
             }
         }
-        return false;
+        throw new TodoNotFoundException(id);
     }
 
-    public boolean markUndone(String id) {
+    public void markUndone(String id) {
         for (Todo todo : todos) {
-            if (todo.getId().equals(id) && todo.isDone()) {
-                todo.setDone(false);
-                todo.setDoneDate(null);
-                return true;
+            if (todo.getId().equals(id)) {
+                if (todo.isDone()) {
+                    todo.setDone(false);
+                    todo.setDoneDate(null);
+                }
+                return;
             }
         }
-        return false;
+        throw new TodoNotFoundException(id);
     }
 
-    public boolean deleteTodo(String id) {
-        return todos.removeIf(todo -> todo.getId().equals(id));
+    public void deleteTodo(String id) {
+        boolean removed = todos.removeIf(todo -> todo.getId().equals(id));
+        if (!removed) {
+            throw new TodoNotFoundException(id);
+        }
     }
 
     public AverageCompletionTimes getAverageCompletionTimes() {
@@ -186,10 +199,15 @@ public class TodoService {
     }
 
 
-    public String validateTodo(Todo todo) {
-        if (todo.getText() == null || todo.getText().trim().isEmpty()) return "Text is required.";
-        if (todo.getText().length() > 120) return "Text cannot exceed 120 characters.";
-        if (todo.getPriority() == null) return "Priority is required.";
-        return null;
+    public void validateTodo(Todo todo) {
+        if (todo.getText() == null || todo.getText().trim().isEmpty()) {
+            throw new TodoValidationException("The todo name is required.");
+        }
+        if (todo.getText().length() > 120) {
+            throw new TodoValidationException("The todo name cannot exceed 120 characters.");
+        }
+        if (todo.getPriority() == null) {
+            throw new TodoValidationException("Priority is required.");
+        }
     }
 }

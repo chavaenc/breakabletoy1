@@ -1,17 +1,21 @@
 package com.example.breakabletoy1.todo.controller;
 
+import com.example.breakabletoy1.todo.exception.TodoNotFoundException;
+import com.example.breakabletoy1.todo.exception.TodoValidationException;
 import com.example.breakabletoy1.todo.model.AverageCompletionTimes;
 import com.example.breakabletoy1.todo.model.PaginatedTodos;
 import com.example.breakabletoy1.todo.model.Priority;
 import com.example.breakabletoy1.todo.model.Todo;
 import com.example.breakabletoy1.todo.service.TodoService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @CrossOrigin(
-        origins = "http://localhost:8080",
+        origins = "${cors.allowed.origins}",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
         allowedHeaders = "*"
 )
@@ -26,14 +30,9 @@ public class TodoController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createTodo(@RequestBody Todo todo) {
-        String error = service.validateTodo(todo);
-        if (error != null) return ResponseEntity.badRequest().body(error);
-
-        boolean createdSuccessfully = service.createTodo(todo) != null;
-        return createdSuccessfully
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> createTodo(@RequestBody Todo todo) {
+        service.createTodo(todo);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
@@ -49,29 +48,27 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTodo(@PathVariable String id, @RequestBody Todo updated) {
-        String error = service.validateTodo(updated);
-        if (error != null) return ResponseEntity.badRequest().body(error);
-
-        boolean updatedSuccessfully = service.updateTodo(id, updated) != null;
-        return updatedSuccessfully
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> updateTodo(@PathVariable String id, @RequestBody Todo updated) {
+        service.updateTodo(id, updated);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/done")
     public ResponseEntity<Void> markDone(@PathVariable String id) {
-        return service.markDone(id) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        service.markDone(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}/undone")
     public ResponseEntity<Void> markUndone(@PathVariable String id) {
-        return service.markUndone(id) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        service.markUndone(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTodo(@PathVariable String id) {
-        return service.deleteTodo(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        service.deleteTodo(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/averages")

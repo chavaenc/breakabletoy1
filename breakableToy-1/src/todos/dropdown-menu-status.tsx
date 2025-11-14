@@ -10,25 +10,23 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { useState } from "react";
-export function DropdownMenuStatus({
-  table,
-  fetchTodos,
-  setTotalPages,
-  status,
-  page,
-  priority,
-  setStatus,
-  setData,
-  text,
-  totalPages,
-  setPage,
-  sortBy,
-}) {
+import { useTodos } from "./TodosContext";
+
+export function DropdownMenuStatus() {
+  const {
+    fetchTodos,
+    setTotalPages,
+    status,
+    priority,
+    setStatus,
+    setRows,
+    text,
+    sortBy,
+  } = useTodos();
+
   const [doneStatusChecked, setDoneStatusChecked] = useState<Checked>(true);
   const [pendingStatusChecked, setPendingStatusChecked] =
     useState<Checked>(true);
-  const [error, setError] = useState();
-
   const getFilteredTodos = async ({
     updatedPriority = priority,
     updatedStatus = status,
@@ -41,34 +39,47 @@ export function DropdownMenuStatus({
         status: updatedStatus,
         priority: updatedPriority,
         page: 0,
-        sortBy,
+        sortBy:
+          sortBy === ""
+            ? undefined
+            : (sortBy as
+                | "priority"
+                | "dueDate"
+                | "priority_desc"
+                | "dueDate_desc"),
       });
 
       const validTotalPages = previewResult.totalPages;
-      const validPage = Math.min(page, validTotalPages - 1);
 
-      const result = await fetchTodos({
-        text,
-        status: updatedStatus,
-        priority: updatedPriority,
-        page: validPage,
-        sortBy,
-      });
-
-      setData(result.todos);
+      setRows(
+        previewResult.todos.map((todo) => ({
+          id: todo.id,
+          text: todo.text,
+          dueDate: todo.dueDate ?? null,
+          done: todo.done,
+          doneDate: todo.doneDate ?? null,
+          priority: (typeof todo.priority === "string"
+            ? todo.priority
+            : todo.priority[0]) as "high" | "low" | "medium",
+          creationDate: todo.creationDate,
+        }))
+      );
       setTotalPages(validTotalPages);
-    } catch (err: any) {
+    } catch (err) {
       console.log(err);
-      setError(err.message);
     }
   };
 
-  const updateFilter = async (fStr: string, setState, currentState) => {
+  const updateFilter = async (
+    fStr: string,
+    setState: (value: boolean) => void,
+    currentState: boolean
+  ) => {
     const newState = !currentState;
     setState(newState);
 
     const newStatus = newState
-      ? [...status, fStr]
+      ? [...status, fStr as "done" | "undone"]
       : status.filter((p) => p !== fStr);
 
     await getFilteredTodos({
@@ -98,7 +109,11 @@ export function DropdownMenuStatus({
         <DropdownMenuCheckboxItem
           checked={doneStatusChecked}
           onCheckedChange={() => {
-            updateFilter("done", setDoneStatusChecked, doneStatusChecked);
+            updateFilter(
+              "done",
+              setDoneStatusChecked,
+              Boolean(doneStatusChecked)
+            );
           }}
           onSelect={(e) => {
             e.preventDefault();
@@ -112,7 +127,7 @@ export function DropdownMenuStatus({
             updateFilter(
               "undone",
               setPendingStatusChecked,
-              pendingStatusChecked
+              Boolean(pendingStatusChecked)
             );
           }}
           onSelect={(e) => {

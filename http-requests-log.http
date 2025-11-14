@@ -1,39 +1,3 @@
-### Create Mock Todos
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Write project plan",
-  "priority": "HIGH",
-  "dueDate": "2025-08-10"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-
-Content-Type: application/json  "text": "Refactor backend logic",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-05"
-}
-
-<> 2025-08-01T151511.400.json
-<> 2025-07-31T195756.400.json
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Design homepage layout",
-  "priority": "LOW",
-  "dueDate": "2025-08-15"
-}
-
 ###
 
 POST http://localhost:9090/todos
@@ -41,8 +5,19 @@ Content-Type: application/json
 
 {
   "text": "Review pull requests",
+  "priority": "HIGH",
+  "dueDate": "2025-11-15"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Update production deployment docs",
   "priority": "MEDIUM",
-  "dueDate": "2025-08-01"
+  "dueDate": "2025-11-16"
 }
 
 ###
@@ -51,31 +26,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Prepare demo for stakeholders",
-  "priority": "HIGH",
-  "dueDate": "2025-08-03"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Fix critical bugs",
-  "priority": "HIGH",
-  "dueDate": "2025-07-31"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Update documentation",
+  "text": "Team standup meeting",
   "priority": "LOW",
-  "dueDate": "2025-08-12"
+  "dueDate": "2025-11-14"
 }
 
 ###
@@ -84,31 +37,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Team meeting preparation",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-07"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Organize codebase",
-  "priority": "LOW",
-  "dueDate": "2025-08-14"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Deploy staging environment",
+  "text": "Fix critical bug in payment service",
   "priority": "HIGH",
-  "dueDate": "2025-08-02"
+  "dueDate": "2025-11-14"
 }
 
 ###
@@ -117,9 +48,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Create test scenarios",
+  "text": "Prepare sprint retrospective",
   "priority": "MEDIUM",
-  "dueDate": "2025-08-09"
+  "dueDate": "2025-11-18"
 }
 
 ###
@@ -128,31 +59,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Analyze user feedback",
-  "priority": "LOW",
-  "dueDate": "2025-08-11"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Fix UI responsiveness",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-13"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Update CI/CD pipeline",
+  "text": "Review security audit report",
   "priority": "HIGH",
-  "dueDate": "2025-08-04"
+  "dueDate": "2025-11-20"
 }
 
 ###
@@ -161,9 +70,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Clean up unused assets",
+  "text": "Update team wiki documentation",
   "priority": "LOW",
-  "dueDate": "2025-08-06"
+  "dueDate": "2025-11-22"
 }
 
 ###
@@ -172,20 +81,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Conduct accessibility audit",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-08"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Write integration tests",
+  "text": "Client demo preparation",
   "priority": "HIGH",
-  "dueDate": "2025-08-10"
+  "dueDate": "2025-11-17"
 }
 
 ###
@@ -194,9 +92,20 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Check error logs",
+  "text": "Refactor legacy authentication module",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-25"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Schedule team building event",
   "priority": "LOW",
-  "dueDate": "2025-08-01"
+  "dueDate": "2025-11-30"
 }
 
 ###
@@ -205,9 +114,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Schedule user testing",
+  "text": "Performance optimization sprint planning",
   "priority": "MEDIUM",
-  "dueDate": "2025-08-11"
+  "dueDate": "2025-12-02"
 }
 
 ###
@@ -216,9 +125,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Backup production DB",
+  "text": "Update dependencies and security patches",
   "priority": "HIGH",
-  "dueDate": "2025-08-03"
+  "dueDate": "2025-11-19"
 }
 
 ###
@@ -227,9 +136,86 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Create team onboarding guide",
+  "text": "Code review for authentication module",
+  "priority": "HIGH",
+  "dueDate": "2025-11-14"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Update API documentation",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-15"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Fix broken unit tests in CI/CD pipeline",
+  "priority": "HIGH",
+  "dueDate": "2025-11-14"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Design database schema for new feature",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-16"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Investigate memory leak in production",
+  "priority": "HIGH",
+  "dueDate": "2025-11-15"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Setup monitoring alerts for new microservice",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-17"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Write integration tests for payment gateway",
+  "priority": "HIGH",
+  "dueDate": "2025-11-18"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Refactor user service layer",
   "priority": "LOW",
-  "dueDate": "2025-08-15"
+  "dueDate": "2025-11-21"
 }
 
 ###
@@ -238,9 +224,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Research performance tuning",
+  "text": "Update frontend dependencies",
   "priority": "MEDIUM",
-  "dueDate": "2025-08-09"
+  "dueDate": "2025-11-19"
 }
 
 ###
@@ -249,42 +235,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Fix timezone issues",
-  "priority": "HIGH",
-  "dueDate": "2025-08-06"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Prepare Q3 OKRs",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-12"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Refactor service layer",
-  "priority": "HIGH",
-  "dueDate": "2025-08-05"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Add missing translations",
+  "text": "Create load testing scenarios",
   "priority": "LOW",
-  "dueDate": "2025-08-07"
+  "dueDate": "2025-11-23"
 }
 
 ###
@@ -293,20 +246,9 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Optimize image loading",
-  "priority": "MEDIUM",
-  "dueDate": "2025-08-08"
-}
-
-###
-
-POST http://localhost:9090/todos
-Content-Type: application/json
-
-{
-  "text": "Test multi-user features",
+  "text": "Implement rate limiting middleware",
   "priority": "HIGH",
-  "dueDate": "2025-08-13"
+  "dueDate": "2025-11-16"
 }
 
 ###
@@ -315,7 +257,205 @@ POST http://localhost:9090/todos
 Content-Type: application/json
 
 {
-  "text": "Improve form validation",
+  "text": "Review and merge feature branch",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-17"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Optimize database queries",
+  "priority": "HIGH",
+  "dueDate": "2025-11-20"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Setup Redis caching layer",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-22"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Conduct security vulnerability scan",
+  "priority": "HIGH",
+  "dueDate": "2025-11-18"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Update user onboarding flow",
   "priority": "LOW",
-  "dueDate": "2025-08-14"
+  "dueDate": "2025-11-24"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Configure backup automation scripts",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-19"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Implement dark mode toggle",
+  "priority": "LOW",
+  "dueDate": "2025-11-26"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Fix responsive design issues on mobile",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-21"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Migrate legacy endpoints to new API version",
+  "priority": "HIGH",
+  "dueDate": "2025-11-23"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Create admin dashboard analytics",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-25"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Setup error tracking with Sentry",
+  "priority": "HIGH",
+  "dueDate": "2025-11-17"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Document deployment procedures",
+  "priority": "LOW",
+  "dueDate": "2025-11-27"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Implement CSV export functionality",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-20"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Add email notification service",
+  "priority": "HIGH",
+  "dueDate": "2025-11-22"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Optimize Docker image size",
+  "priority": "LOW",
+  "dueDate": "2025-11-28"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Setup staging environment",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-24"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Implement file upload validation",
+  "priority": "HIGH",
+  "dueDate": "2025-11-19"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Create user feedback survey",
+  "priority": "LOW",
+  "dueDate": "2025-11-29"
+}
+
+###
+
+POST http://localhost:9090/todos
+Content-Type: application/json
+
+{
+  "text": "Upgrade to latest Spring Boot version",
+  "priority": "MEDIUM",
+  "dueDate": "2025-11-26"
 }

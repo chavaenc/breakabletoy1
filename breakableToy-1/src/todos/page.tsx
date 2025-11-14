@@ -1,44 +1,16 @@
-import { useEffect, useState } from "react";
-import { getColumns, Todo } from "./columns";
 import { DataTable } from "./data-table";
-import { fetchTodos } from "./api/fetchTodos";
+import { TodosProvider } from "./TodosContext";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function DemoPage() {
-  const [rows, setRows] = useState<Todo[]>([]);
-  const [page, setPage] = useState();
-  const [priority, setPriority] = useState(["HIGH", "MEDIUM", "LOW"]);
-  const [total, setTotal] = useState();
-  const [totalPages, setTotalPages] = useState();
-  const [status, setStatus] = useState(["done", "undone"]);
-  const [text, setText] = useState("");
-  const [sortBy, setSortBy] = useState("");
-
-  useEffect(() => {
-    fetchTodos({ page, status, priority, text, sortBy }).then((data) => {
-      setRows(data.todos);
-    });
-  }, []);
-
   return (
-    <div className="container mx-auto py-10">
-      <DataTable
-        columns={getColumns}
-        rows={rows}
-        setRows={setRows}
-        page={page}
-        priority={priority}
-        setPriority={setPriority}
-        status={status}
-        setStatus={setStatus}
-        text={text}
-        setText={setText}
-        total={total}
-        totalPages={totalPages}
-        setTotalPages={setTotalPages}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        fetchTodos={fetchTodos}
-      />
-    </div>
+    <TodosProvider>
+      <div className="container mx-auto py-4 px-4 sm:py-10">
+        <div className="flex justify-end mb-4">
+          <ModeToggle />
+        </div>
+        <DataTable />
+      </div>
+    </TodosProvider>
   );
 }

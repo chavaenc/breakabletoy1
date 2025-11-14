@@ -1,111 +1,78 @@
-import React from "react";
 import { Input } from "../components/ui/input";
+import { Search } from "lucide-react";
 import { DropdownMenuPriority } from "./dropdown-menu-priority";
 import { DropdownMenuStatus } from "./dropdown-menu-status";
+import { useTodos } from "./TodosContext";
 
-export default function Filters({
-  table,
-  priority,
-  setPriority,
-  fetchTodos,
-  setTotalPages,
-  page,
-  setPage,
-  status,
-  text,
-  setText,
-  totalPages,
-  setStatus,
-  setData,
-  sortBy,
-}) {
-  const getFilteredTodos = async ({
+export default function Filters() {
+  const {
     text,
-    status,
-    priority,
-    page,
+    setText,
+    fetchTodos,
+    setPage,
     setTotalPages,
+    setRows,
+    priority,
+    status,
     sortBy,
-  }) => {
+  } = useTodos();
+
+  const getFilteredTodos = async (newText: string) => {
     const previewRes = await fetchTodos({
-      text,
+      text: newText,
       status,
       priority,
       page: 0,
-      sortBy,
+      sortBy:
+        sortBy === ""
+          ? undefined
+          : (sortBy as
+              | "priority"
+              | "dueDate"
+              | "priority_desc"
+              | "dueDate_desc"),
     });
 
     const validTotalPages = previewRes.totalPages;
-    const validPage = Math.min(page, validTotalPages - 1);
+    const validPage = Math.min(0, validTotalPages - 1);
 
-    const res = await fetchTodos({
-      text,
-      status,
-      priority,
-      page: validPage,
-      sortBy,
-    });
-
+    setRows(
+      previewRes.todos.map((todo) => ({
+        id: todo.id,
+        text: todo.text,
+        dueDate: todo.dueDate ?? null,
+        done: todo.done,
+        doneDate: todo.doneDate ?? null,
+        priority: (typeof todo.priority === "string"
+          ? todo.priority
+          : todo.priority[0]) as "high" | "low" | "medium",
+        creationDate: todo.creationDate,
+      }))
+    );
     setTotalPages(validTotalPages);
     setPage(validPage);
-    setData(res.todos);
   };
 
   return (
-    <div className="flex items-start py-4 gap-1">
-      <div className="flex flex-col gap-6 items-start justify-between align-middle">
-        <p>Name:</p>
-        <p>Priority:</p>
-        <p>State:</p>
-      </div>
-
-      <div className="flex  flex-col items-start gap-2">
+    <div className="mb-4 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
-          placeholder="Filter..."
+          placeholder="Search todos..."
           value={text}
           onChange={(e) => {
             const newText = e.target.value;
-            setText(newText); // local state for UI
-            getFilteredTodos({
-              text: newText,
-              status: status,
-              priority: priority,
-              page: 0,
-              sortBy: sortBy,
-              setTotalPages: setTotalPages,
-            });
+            setText(newText);
+            getFilteredTodos(newText);
           }}
+          className="pl-9"
         />
-        <DropdownMenuPriority
-          table={table}
-          priority={priority}
-          setPriority={setPriority}
-          fetchTodos={fetchTodos}
-          setTotalPages={setTotalPages}
-          setPage={setPage}
-          text={text}
-          totalPages={totalPages}
-          setData={setData}
-          page={page}
-          sortBy={sortBy}
-          status={status}
-        />
-        <DropdownMenuStatus
-          table={table}
-          text={text}
-          page={page}
-          status={status}
-          totalPages={totalPages}
-          setPage={setPage}
-          priority={priority}
-          setStatus={setStatus}
-          fetchTodos={fetchTodos}
-          setTotalPages={setTotalPages}
-          sortBy={sortBy}
-          setData={setData}
-        />
-        {table.getmodel}
+      </div>
+
+      <div className="flex gap-2">
+        <DropdownMenuPriority />
+        <DropdownMenuStatus />
       </div>
     </div>
   );

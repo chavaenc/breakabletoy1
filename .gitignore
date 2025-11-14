@@ -57,3 +57,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+backend/.env
+breakableToy-1/.env

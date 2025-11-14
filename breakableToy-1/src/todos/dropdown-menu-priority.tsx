@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "../components/ui/button";
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 import {
@@ -10,28 +10,27 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import type { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
+import { useTodos } from "./TodosContext";
 
-export function DropdownMenuPriority({
-  table,
-  priority,
-  setPriority,
-  fetchTodos,
-  setTotalPages,
-  setData,
-  status,
-  page,
-  setPage,
-  text,
-  totalPages,
-  sortBy,
-}) {
+export function DropdownMenuPriority() {
+  const {
+    priority,
+    setPriority,
+    fetchTodos,
+    setTotalPages,
+    setRows,
+    status,
+    page,
+    setPage,
+    text,
+    sortBy,
+  } = useTodos();
+
   const [lowStatusChecked, setLowChecked] = React.useState<Checked>(true);
   const [mediumStatusChecked, setMediumStatusChecked] =
     React.useState<Checked>(true);
   const [highStatusChecked, setHighStatusChecked] =
     React.useState<Checked>(true);
-  const [error, setError] = useState();
-
   const getFilteredTodos = async ({
     updatedPriority = priority,
     updatedStatus = status,
@@ -43,7 +42,14 @@ export function DropdownMenuPriority({
         status: updatedStatus,
         priority: updatedPriority,
         page: 0,
-        sortBy,
+        sortBy:
+          sortBy === ""
+            ? undefined
+            : (sortBy as
+                | "priority"
+                | "dueDate"
+                | "priority_desc"
+                | "dueDate_desc"),
       });
 
       let newPage = page;
@@ -52,28 +58,35 @@ export function DropdownMenuPriority({
         setPage(newPage);
       }
 
-      const result = await fetchTodos({
-        text,
-        status: updatedStatus,
-        priority: updatedPriority,
-        page: newPage,
-        sortBy,
-      });
-
-      setData(result.todos);
-      setTotalPages(result.totalPages);
-    } catch (err: any) {
+      setRows(
+        tempResult.todos.map((todo) => ({
+          id: todo.id,
+          text: todo.text,
+          dueDate: todo.dueDate ?? null,
+          done: todo.done,
+          doneDate: todo.doneDate ?? null,
+          priority: (typeof todo.priority === "string"
+            ? todo.priority
+            : todo.priority[0]) as "high" | "low" | "medium",
+          creationDate: todo.creationDate,
+        }))
+      );
+      setTotalPages(tempResult.totalPages);
+    } catch (err) {
       console.log(err);
-      setError(err.message);
     }
   };
 
-  const updateFilter = async (fStr: string, setState, currentState) => {
+  const updateFilter = async (
+    fStr: string,
+    setState: (value: boolean) => void,
+    currentState: boolean
+  ) => {
     const newState = !currentState;
     setState(newState);
 
     const newPriority = newState
-      ? [...priority, fStr]
+      ? [...priority, fStr as "HIGH" | "MEDIUM" | "LOW"]
       : priority.filter((p) => p !== fStr);
 
     await getFilteredTodos({
@@ -102,8 +115,12 @@ export function DropdownMenuPriority({
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={highStatusChecked}
-          onCheckedChange={async (e) => {
-            await updateFilter("HIGH", setHighStatusChecked, highStatusChecked);
+          onCheckedChange={async () => {
+            await updateFilter(
+              "HIGH",
+              setHighStatusChecked,
+              Boolean(highStatusChecked)
+            );
           }}
           onSelect={(e) => {
             e.preventDefault();
@@ -114,7 +131,11 @@ export function DropdownMenuPriority({
         <DropdownMenuCheckboxItem
           checked={mediumStatusChecked}
           onCheckedChange={() => {
-            updateFilter("MEDIUM", setMediumStatusChecked, mediumStatusChecked);
+            updateFilter(
+              "MEDIUM",
+              setMediumStatusChecked,
+              Boolean(mediumStatusChecked)
+            );
           }}
           onSelect={(e) => {
             e.preventDefault();
@@ -125,7 +146,7 @@ export function DropdownMenuPriority({
         <DropdownMenuCheckboxItem
           checked={lowStatusChecked}
           onCheckedChange={() => {
-            updateFilter("LOW", setLowChecked, lowStatusChecked);
+            updateFilter("LOW", setLowChecked, Boolean(lowStatusChecked));
           }}
           onSelect={(e) => {
             e.preventDefault();

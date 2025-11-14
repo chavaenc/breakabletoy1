@@ -1,21 +1,22 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
-
 import {
-  ColumnDef,
-  SortingState,
   flexRender,
   getCoreRowModel,
   useReactTable,
-  ColumnFiltersState,
-  getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
 } from "@tanstack/react-table";
 
 import * as React from "react";
 import CreateTodo from "./createTodo";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Checkbox } from "../components/ui/checkbox";
+import { TrashIcon } from "lucide-react";
+import { toast } from "sonner";
+import { markDone, markUndone } from "./api/updateTodo";
+import { deleteTodo } from "./api/deleteTodo";
+import UpdateTodo from "./updateTodo";
 import {
   Table,
   TableBody,
@@ -27,128 +28,139 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "../components/ui/pagination";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Filters from "./filters";
-import { getAverages } from "./api/fetchTodos";
-import { getColumns, type Todo } from "./columns";
+import { getColumns } from "./columns";
+import { useTodos } from "./TodosContext";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  setRows: any;
-  priority: any;
-  setPriority: any;
-  done: any;
-  text: any;
-  setDone: any;
-  setText: any;
-  sortBy: string;
-  setSortBy: any;
-}
-
-export function DataTable<TData, TValue>({
-  columns,
-  rows,
-  setRows,
-  text,
-  setText,
-  total,
-  fetchTodos,
-  priority,
-  setPriority,
-  status,
-  setStatus,
-  sortBy,
-  setSortBy,
-}: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [totalPages, setTotalPages] = useState(0);
-  const [metricData, setMetricData] = useState();
-  const [page, setPage] = useState(0);
+export function DataTable() {
+  const {
+    rows,
+    page,
+    setPage,
+    totalPages,
+    metricData,
+    refreshTodos,
+    refreshAverages,
+    setSortBy,
+  } = useTodos();
 
   const table = useReactTable({
     data: rows,
-    columns: getColumns({
-      setRows,
-      setTotalPages,
-      fetchTodos,
-      getAverages: () => {
-        getAverages(setMetricData);
-      },
-      metricData,
-      setMetricData,
-      sortBy,
-      setSortBy,
-      text,
-      priority,
-      status,
-      page,
-    }),
+    columns: getColumns(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
   });
 
-  interface Todo {
-    id: number;
-    name: string;
-    priority: string;
-    dueDate: string;
-    doneDate: string;
-    creationDate: string;
-    status: string;
-  }
+  const [activePrioritySort, setActivePrioritySort] = React.useState<
+    "" | "asc" | "desc"
+  >("");
+  const [activeDateSort, setActiveDateSort] = React.useState<
+    "" | "asc" | "desc"
+  >("");
 
   useEffect(() => {
-    fetchTodos({ page, priority, status, sortBy, text }).then((data) => {
-      getAverages(setMetricData);
-      setRows(data.todos);
-      setTotalPages(data.totalPages);
-    });
-  }, [page]);
+    refreshTodos();
+    refreshAverages();
+  }, [page, refreshTodos, refreshAverages]);
 
   return (
     <div>
-      <Filters
-        table={table}
-        priority={priority}
-        setPriority={setPriority}
-        fetchTodos={fetchTodos}
-        text={text}
-        setTotalPages={setTotalPages}
-        setPage={setPage}
-        totalPages={totalPages}
-        status={status}
-        setStatus={setStatus}
-        page={page}
-        setData={setRows}
-        setText={setText}
-        sortBy={sortBy}
-      />
-      <CreateTodo
-        setData={setRows}
-        fetchTodos={() => fetchTodos({ page, status, priority, sortBy, text })}
-        setTotalPages={setTotalPages}
-      />
-      <div className="flex mb-4  "></div>
-      <div className="rounded-md border mx-auto w-[90%]">
-        <Table className="px-0 table-fixed">
+      <Filters />
+      <div className="mb-4">
+        {/* Desktop Create Todo */}
+        <div className="hidden md:block">
+          <CreateTodo />
+        </div>
+
+        {/* Mobile Sort Controls */}
+        <div className="md:hidden flex gap-2 justify-end">
+          <Button
+            variant={activePrioritySort !== "" ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              let newOrder: "" | "asc" | "desc" = "";
+              if (activePrioritySort === "") {
+                newOrder = "desc";
+              } else if (activePrioritySort === "desc") {
+                newOrder = "asc";
+              } else {
+                newOrder = "";
+              }
+              setActivePrioritySort(newOrder);
+              setActiveDateSort("");
+              setSortBy(
+                (newOrder === "desc"
+                  ? "priority_desc"
+                  : newOrder === "asc"
+                  ? "priority"
+                  : "") as
+                  | "priority"
+                  | "dueDate"
+                  | "priority_desc"
+                  | "dueDate_desc"
+              );
+            }}
+            className="transition-all"
+          >
+            Priority{" "}
+            {activePrioritySort === "desc"
+              ? "↓"
+              : activePrioritySort === "asc"
+              ? "↑"
+              : ""}
+          </Button>
+          <Button
+            variant={activeDateSort !== "" ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              let newOrder: "" | "asc" | "desc" = "";
+              if (activeDateSort === "") {
+                newOrder = "desc";
+              } else if (activeDateSort === "desc") {
+                newOrder = "asc";
+              } else {
+                newOrder = "";
+              }
+              setActiveDateSort(newOrder);
+              setActivePrioritySort("");
+              setSortBy(
+                (newOrder === "desc"
+                  ? "dueDate_desc"
+                  : newOrder === "asc"
+                  ? "dueDate"
+                  : "") as
+                  | "priority"
+                  | "dueDate"
+                  | "priority_desc"
+                  | "dueDate_desc"
+              );
+            }}
+            className="transition-all"
+          >
+            Date{" "}
+            {activeDateSort === "desc"
+              ? "↓"
+              : activeDateSort === "asc"
+              ? "↑"
+              : ""}
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile Floating Action Button */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <CreateTodo isMobileFloating={true} />
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block rounded-md border mx-auto w-full overflow-x-auto">
+        <Table className="px-0 min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -183,22 +195,195 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
-                let bgColor = "";
+                const todo = row.original;
 
-                return <RowBgColor row={row} />;
+                return (
+                  <TableRow
+                    key={row.id}
+                    className={todo.done ? "opacity-50" : ""}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const shouldStrikethrough =
+                        todo.done &&
+                        !["status", "actions"].includes(cell.column.id);
+
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={shouldStrikethrough ? "line-through" : ""}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
               })
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={7} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-2">
+        {table.getRowModel().rows?.length ? (
+          table.getRowModel().rows.map((row) => {
+            const todo = row.original;
+            const priorityLower = todo.priority.toLowerCase();
+
+            let priorityColor = "";
+            if (priorityLower === "high") {
+              priorityColor =
+                "bg-red-200 text-red-900 dark:bg-red-900 dark:text-red-100";
+            } else if (priorityLower === "medium") {
+              priorityColor =
+                "bg-yellow-200 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100";
+            } else {
+              priorityColor =
+                "bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-100";
+            }
+
+            let dueDateColor = "";
+            let dateStr = "";
+            if (todo.dueDate) {
+              const dueDate = new Date(todo.dueDate);
+              dateStr = dueDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              });
+
+              const weekMs = 604800000;
+              const dueTime = dueDate.getTime();
+              const now = Date.now();
+              const timeRemaining = dueTime - now;
+
+              if (timeRemaining < weekMs) {
+                dueDateColor =
+                  "bg-red-200 text-red-900 dark:bg-red-900 dark:text-red-100";
+              } else if (timeRemaining < 2 * weekMs) {
+                dueDateColor =
+                  "bg-yellow-200 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100";
+              } else {
+                dueDateColor =
+                  "bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-100";
+              }
+            }
+
+            return (
+              <div
+                key={row.id}
+                className={`border rounded-md p-2 bg-white dark:bg-gray-800 ${
+                  todo.done ? "opacity-50" : ""
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {todo.done ? (
+                    <Badge
+                      className="bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-100 cursor-pointer text-xs px-1.5 py-0"
+                      onClick={async () => {
+                        try {
+                          await markUndone(todo.id);
+                          await refreshTodos();
+                          refreshAverages();
+                          toast.success("Todo marked as undone!");
+                        } catch (err) {
+                          toast.error("Failed to update todo status");
+                          console.error("Failed to update todo status:", err);
+                        }
+                      }}
+                    >
+                      ✓
+                    </Badge>
+                  ) : (
+                    <Checkbox
+                      checked={todo.done}
+                      onCheckedChange={async (checked) => {
+                        try {
+                          if (checked) {
+                            await markDone(todo.id);
+                          } else {
+                            await markUndone(todo.id);
+                          }
+                          await refreshTodos();
+                          refreshAverages();
+                          toast.success(
+                            checked
+                              ? "Todo marked as done!"
+                              : "Todo marked as undone!"
+                          );
+                        } catch (err) {
+                          toast.error("Failed to update todo status");
+                          console.error("Failed to update todo status:", err);
+                        }
+                      }}
+                      aria-label="Mark as done"
+                      className="shrink-0"
+                    />
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={`text-sm font-medium text-left ${
+                        todo.done ? "line-through" : ""
+                      }`}
+                    >
+                      {todo.text}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Badge className={`${priorityColor} text-xs px-1.5 py-0`}>
+                      {priorityLower === "high"
+                        ? "H"
+                        : priorityLower === "medium"
+                        ? "M"
+                        : "L"}
+                    </Badge>
+                    {todo.dueDate && (
+                      <Badge className={`${dueDateColor} text-xs px-1.5 py-0`}>
+                        {dateStr}
+                      </Badge>
+                    )}
+                    <Button
+                      onClick={() => {
+                        deleteTodo(
+                          refreshTodos,
+                          () => {},
+                          todo.id,
+                          refreshAverages
+                        );
+                      }}
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                    >
+                      <TrashIcon className="h-3.5 w-3.5 text-red-400" />
+                    </Button>
+                    <UpdateTodo
+                      id={todo.id}
+                      otext={todo.text}
+                      odueDate={todo.dueDate}
+                      opriority={todo.priority}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="text-center py-12 text-muted-foreground">
+            No results.
+          </div>
+        )}
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <Pagination>
@@ -208,7 +393,9 @@ export function DataTable<TData, TValue>({
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  page > 0 && setPage((prev) => prev - 1);
+                  if (page > 0) {
+                    setPage((prev) => prev - 1);
+                  }
                 }}
               />
             </PaginationItem>
@@ -239,52 +426,77 @@ export function DataTable<TData, TValue>({
           </PaginationContent>
         </Pagination>
       </div>
-      <div className="flex bg-white shadow-md rounded-md p-6 space-y-6 justify-around items-center">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+      <div className="flex flex-col md:flex-row bg-white dark:bg-gray-800 shadow-md rounded-md p-4 sm:p-6 space-y-4 md:space-y-0 md:space-x-6 justify-around items-start md:items-center border dark:border-gray-700">
+        <div className="w-full md:w-auto">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Average Time to Finish Tasks
           </h3>
-          <p className="text-gray-700">
-            <span className="font-medium text-blue-600">
+          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+            <span className="font-medium text-blue-600 dark:text-blue-400">
               {metricData?.averageTime?.toFixed(2)}
             </span>{" "}
             mins, (
-            <span className="font-medium text-green-600">
-              {(metricData?.averageTime / 60)?.toPrecision(3)}
+            <span className="font-medium text-green-600 dark:text-green-400">
+              {metricData?.averageTime
+                ? (metricData.averageTime / 60).toPrecision(3)
+                : 0}
             </span>{" "}
             hours or{" "}
-            <span className="font-medium text-purple-600">
-              {(metricData?.averageTime / 60 / 24)?.toPrecision(3)}
+            <span className="font-medium text-purple-600 dark:text-purple-400">
+              {metricData?.averageTime
+                ? (metricData.averageTime / 60 / 24).toPrecision(3)
+                : 0}
             </span>{" "}
             days)
           </p>
         </div>
 
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+        <div className="w-full md:w-auto">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Average Time by Priority
           </h3>
           <ul className="space-y-2">
-            <li className="text-gray-700">
-              <span className="font-semibold text-yellow-500">Low:</span>{" "}
+            <li className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+              <span className="font-semibold text-yellow-500 dark:text-yellow-400">
+                Low:
+              </span>{" "}
               {metricData?.byPriority?.low?.toFixed(2)} mins (
-              {(metricData?.byPriority?.low / 60)?.toPrecision(3)} hours{" "}
-              {" or "}
-              {(metricData?.byPriority?.low / 60 / 24)?.toPrecision(3)} days)
+              {metricData?.byPriority?.low
+                ? (metricData.byPriority.low / 60).toPrecision(3)
+                : 0}{" "}
+              hours {" or "}
+              {metricData?.byPriority?.low
+                ? (metricData.byPriority.low / 60 / 24).toPrecision(3)
+                : 0}{" "}
+              days)
             </li>
-            <li className="text-gray-700">
-              <span className="font-semibold text-blue-500">Medium:</span>{" "}
+            <li className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+              <span className="font-semibold text-blue-500 dark:text-blue-400">
+                Medium:
+              </span>{" "}
               {metricData?.byPriority?.medium?.toFixed(2)} mins (
-              {(metricData?.byPriority.medium / 60)?.toPrecision(3)} hours{" "}
-              {" or "}
-              {(metricData?.byPriority.medium / 60 / 24)?.toPrecision(3)} days)
+              {metricData?.byPriority?.medium
+                ? (metricData.byPriority.medium / 60).toPrecision(3)
+                : 0}{" "}
+              hours {" or "}
+              {metricData?.byPriority?.medium
+                ? (metricData.byPriority.medium / 60 / 24).toPrecision(3)
+                : 0}{" "}
+              days)
             </li>
-            <li className="text-gray-700">
-              <span className="font-semibold text-red-500">High:</span>{" "}
+            <li className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+              <span className="font-semibold text-red-500 dark:text-red-400">
+                High:
+              </span>{" "}
               {metricData?.byPriority?.high?.toFixed(2)} mins (
-              {(metricData?.byPriority?.high / 60)?.toPrecision(3)} hours{" "}
-              {" or "}
-              {(metricData?.byPriority?.high / 60 / 24)?.toPrecision(3)} days)
+              {metricData?.byPriority?.high
+                ? (metricData.byPriority.high / 60).toPrecision(3)
+                : 0}{" "}
+              hours {" or "}
+              {metricData?.byPriority?.high
+                ? (metricData.byPriority.high / 60 / 24).toPrecision(3)
+                : 0}{" "}
+              days)
             </li>
           </ul>
         </div>
@@ -292,42 +504,3 @@ export function DataTable<TData, TValue>({
     </div>
   );
 }
-
-const RowBgColor = ({ row }) => {
-  let bgColor = "";
-  let textDeco = "";
-
-  const todo = row.original;
-
-  if (todo.dueDate) {
-    const weekMs = 604800000;
-    const dueDate = new Date(todo.dueDate).getTime();
-    const now = Date.now();
-
-    if (now + weekMs >= dueDate) {
-      bgColor = "#ff8a8a";
-    } else if (now + 2 * weekMs >= dueDate) {
-      bgColor = "#ffff0094";
-    } else {
-      bgColor = "rgb(186 255 186)";
-    }
-  }
-
-  textDeco = todo.done ? "line-through" : "none";
-
-  return (
-    <TableRow
-      key={row.id}
-      style={{ backgroundColor: bgColor, textDecoration: textDeco }}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableCell
-          className="truncate overflow-hidden text-ellipsis whitespace-nowrap"
-          key={cell.id}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-};

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -16,17 +17,22 @@ import {
 } from "../components/ui/popover";
 import { Label } from "../components/ui/label";
 import { DialogClose } from "../components/ui/dialog";
-import { ChevronDownIcon, Italic } from "lucide-react";
+import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group";
 import { Calendar } from "../components/ui/calendar";
 import { Button } from "../components/ui/button";
-import { useFormStatus } from "react-dom";
 import { Input } from "../components/ui/input";
 import { postTodo } from "./api/postTodo";
-import type { Todo } from "./columns";
-export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
-  const [open, setOpen] = React.useState();
-  const [dialogOpen, setDialogOpen] = React.useState();
+import { useTodos } from "./TodosContext";
+
+export default function CreateTodo({
+  isMobileFloating = false,
+}: {
+  isMobileFloating?: boolean;
+}) {
+  const { refreshTodos, setTotalPages } = useTodos();
+  const [open, setOpen] = React.useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [text, setText] = useState("");
   const [priority, setPriority] = useState<"HIGH" | "MEDIUM" | "LOW" | "">("");
@@ -34,35 +40,43 @@ export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting todo...");
-    await postTodo({
-      setText,
-      setPriority,
-      setError,
-      setDialogOpen,
-      setData,
-      setTotalPages,
-      fetchTodos,
-      setDate,
-      date,
-      priority,
-      text,
-    });
+    try {
+      await postTodo({
+        setText,
+        setPriority,
+        setError,
+        setDialogOpen,
+        setData: async () => {
+          await refreshTodos();
+        },
+        setTotalPages,
+        fetchTodos: refreshTodos,
+        setDate,
+        date,
+        priority,
+        text,
+      });
+      const dueDateStr = date ? ` - Due: ${date.toLocaleDateString()}` : "";
+      toast.success(`Todo created: ${text}${dueDateStr}`);
+    } catch (err) {
+      toast.error("Failed to create todo");
+      console.error("Failed to create todo:", err);
+    }
   };
-
-  function Submit() {
-    const { pending } = useFormStatus();
-    return (
-      <Button type="submit" disabled={pending}>
-        {pending ? "Submitting..." : "Submit"}
-      </Button>
-    );
-  }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary">+ New Todo </Button>
+        {isMobileFloating ? (
+          <Button
+            size="lg"
+            className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          >
+            <PlusIcon className="h-6 w-6" />
+          </Button>
+        ) : (
+          <Button variant="secondary">+ New Todo</Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
@@ -88,7 +102,8 @@ export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
               <ToggleGroup
                 type="single"
                 onValueChange={(e) => {
-                  if (e) setPriority(e.toUpperCase() as any);
+                  if (e)
+                    setPriority(e.toUpperCase() as "HIGH" | "MEDIUM" | "LOW");
                 }}
               >
                 <ToggleGroupItem value="high" aria-label="Toggle high">
@@ -141,9 +156,9 @@ export default function CreateTodo({ setData, fetchTodos, setTotalPages }) {
                 </Popover>
               </div>
             </div>
-            <p>{error}</p>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
